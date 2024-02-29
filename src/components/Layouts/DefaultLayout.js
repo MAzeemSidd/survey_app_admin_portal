@@ -28,9 +28,9 @@ const projects = [
   {key: '3', label: 'Project 3'},
 ]
 const items = [
-  {key: '/', label: 'Home', icon: <ProductOutlined />},
-  {key: '/project-details', label: 'Projects', icon: <ProductOutlined />, children: projects},
-  {key: '/about', label: 'About Us', icon: <DesktopOutlined />},
+  {key: '', label: 'Home', icon: <ProductOutlined />},
+  {key: 'project', label: 'Projects', icon: <ProductOutlined />, children: projects},
+  {key: 'about', label: 'About Us', icon: <DesktopOutlined />},
 ];
 const App = () => {
   const [collapsed, setCollapsed] = useState(false);
