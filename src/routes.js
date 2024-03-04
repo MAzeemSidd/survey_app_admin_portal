@@ -7,7 +7,7 @@ const TaskDetails = React.lazy(() => import('./components/Tasks/TaskDetails'))
 const routes = [
     { path: '', name: 'Home', element: Projects },
     { path: 'project/:id', name: 'Project Details', element: ProjectDetails },
-    { path: '/project-task-detail/:id/:id', name: 'Task Details', element: TaskDetails },
+    { path: '/project/:id/task/:id', name: 'Task Details', element: TaskDetails },
 ]
 
 export default routes

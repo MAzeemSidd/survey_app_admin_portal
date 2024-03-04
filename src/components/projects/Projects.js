@@ -38,7 +38,7 @@ const Projects = () => {
 
   return (
     <div>
-      <MainDrawer open={drawerVisibility} onClose={()=>setDrawerVisibility(false)} type='Project' /*submitFunction={(value)=>setProjectData(prev=>([...prev, {...value, id: prev.length+1}]))}*/ />
+      <MainDrawer open={drawerVisibility} onClose={()=>setDrawerVisibility(false)} title='Project' /*submitFunction={(value)=>setProjectData(prev=>([...prev, {...value, id: prev.length+1}]))}*/ />
       <Row gutter={[0,24]} style={{marginTop: 30, marginBottom: 15}}>
         <Col span={24}><Typography.Title level={3} style={{color: '#3C4B64',margin: 0}}>Projects</Typography.Title></Col>
         <Col span={24}><Button icon={<AppstoreAddOutlined />} onClick={()=>setDrawerVisibility(true)}>Add Project</Button></Col>
@@ -46,7 +46,7 @@ const Projects = () => {
       <Row gutter={[24,24]}>
         {projectData?.map((item, index) => (
           <Col key={index} span={6}>
-            <Card size='small' hoverable onClick={()=>navigate(`project/${item.id}`)}>
+            <Card size='small' style={{border: '.5px solid #e0e0e0'}} hoverable onClick={()=>navigate(`project/${item.id}`)}>
               <Typography.Text style={{fontSize: 16, fontWeight: 500, color: '#3C4B64'}}>{item.name}</Typography.Text>
               <Typography.Paragraph>
                 <Typography.Text>{item.description}</Typography.Text>
