@@ -4,19 +4,14 @@ import { Col, Row, Typography, Card, Space, Button } from 'antd'
 import React, { useEffect, useState } from 'react'
 import MainDrawer from '../MainDrawer'
 import { useNavigate } from 'react-router-dom'
-import { getData } from '../../Services/NetworkService'
+import { getData, postData } from '../../Services/NetworkService'
 import axios from 'axios'
 
 const Projects = () => {
   const navigate = useNavigate();
   const [drawerVisibility, setDrawerVisibility] = useState(false);
-  const [projectData, setProjectData] = useState(/*[
-    {id: 1, name: "Project 1", description: "Description"},
-    {id: 2, name: "Project 2", description: "Description"},
-    {id: 3, name: "Project 3", description: "Description"},
-    {id: 4, name: "Project 4", description: "Description"},
-    {id: 5, name: "Project 5", description: "Description"}
-  ]*/)
+  const [editForm, setEditForm] = useState({visibility: false, data: null})
+  const [projectData, setProjectData] = useState(null)
   console.log('projectData', projectData)
 
   useEffect(()=>{
@@ -38,18 +33,56 @@ const Projects = () => {
 
   return (
     <div>
-      <MainDrawer open={drawerVisibility} onClose={()=>setDrawerVisibility(false)} title='Project' /*submitFunction={(value)=>setProjectData(prev=>([...prev, {...value, id: prev.length+1}]))}*/ />
-      <Row gutter={[0,24]} style={{marginTop: 30, marginBottom: 15}}>
+      <MainDrawer open={drawerVisibility} formType='Add' onClose={()=>setDrawerVisibility(false)} title='Project' submitFunction={(fields, resetFields)=>{
+        postData('projects', JSON.stringify(fields))
+        .then(res=>{
+          console.log('projectAdd-res', res)
+          getData('projects')
+          .then((res) => {
+              setProjectData(res?.data?.data)
+              console.log('project-res', res?.data?.data);
+          }).catch(e=>{
+              console.log('project-error', e);
+          })
+          resetFields()
+          setDrawerVisibility(false)
+        })
+        .catch(e=>console.log('projectAdd-error',e))
+      }} />
+
+      {editForm.data && <MainDrawer open={editForm.visibility} data={editForm.data} title='Project'
+        onClose={(resetFields)=>{
+          resetFields();
+          setEditForm(prev=>({...prev, visibility: false, data: null}));
+        }}
+        submitFunction={(fields, resetFields)=>{
+          putData(`projects/${editForm?.data?.id}`, JSON.stringify({...fields, id: editForm?.data?.id}))
+          .then(res=>{
+            console.log('taskAdd-res', res)
+            getData(`projects`).then(res=>{
+              setProjectData(res?.data?.data)
+              console.log('project-res', res?.data?.data);
+            }).catch(e=>{
+              console.log('tasks-error', e)
+            })
+            resetFields()
+            setEditForm(prev=>({...prev, visibility: false, data: null}));
+          })
+          .catch(e=>console.log('taskAdd-error',e))
+        }}
+      />}
+
+      <Row gutter={[0,24]} style={{marginTop: 30, marginBottom: 20}}>
         <Col span={24}><Typography.Title level={3} style={{color: '#3C4B64',margin: 0}}>Projects</Typography.Title></Col>
         <Col span={24}><Button icon={<AppstoreAddOutlined />} onClick={()=>setDrawerVisibility(true)}>Add Project</Button></Col>
       </Row>
-      <Row gutter={[24,24]}>
+      <Row gutter={[12,12]}>
         {projectData?.map((item, index) => (
           <Col key={index} span={6}>
-            <Card size='small' style={{border: '.5px solid #e0e0e0'}} hoverable onClick={()=>navigate(`project/${item.id}`)}>
+            <Card size='small' style={{border: '.5px solid #e0e0e0'}} hoverable onClick={()=>navigate(`/project/${item.id}`)}>
               <Typography.Text style={{fontSize: 16, fontWeight: 500, color: '#3C4B64'}}>{item.name}</Typography.Text>
-              <Typography.Paragraph>
-                <Typography.Text>{item.description}</Typography.Text>
+              <Typography.Paragraph ellipsis={{ rows: 3 }}>
+                <Typography.Text style={{fontSize: 10}}>{item.description}</Typography.Text>
               </Typography.Paragraph>
             </Card>
           </Col>

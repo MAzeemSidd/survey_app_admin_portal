@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c21hbiIsImV4cCI6MTcwOTQwMjk2OCwiaWF0IjoxNzA5Mzg0OTY4fQ.XnhQGxM3_x6Y6JOc8ewaHt-UjGH1JzgrgTSZU-HWd0exEVSymiMubzC57RoXatiNH5Oe3wsmawl4i-wwYYs89Q'
+const token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c21hbiIsImV4cCI6MTcwOTczODA0MSwiaWF0IjoxNzA5NzIwMDQxfQ.u6J9qDzAaDETdG4meExX9vhPRoF-yDmjw6O0z15tvWN3HH3Kg28ULKF4YM-EEeTigBJG8G77c9gg-R05Ozs5Lg'
 
 const config = { withCredentials: true };
 const headers = {'Authorization':`Bearer ${token}`, 'Content-Type':'application/json'}
@@ -10,7 +10,8 @@ export const postData = async (endPoint, data) => {
     const resp = await axios.post(
       process.env.REACT_APP_SERVER_URL + endPoint,
       data,
-      config
+      // config,
+      {headers: headers}
     );
     console.log(resp);
     return resp;
@@ -25,7 +26,8 @@ export const putData = async (endPoint, data) => {
     const resp = await axios.put(
       process.env.REACT_APP_SERVER_URL + endPoint,
       data,
-      config
+      // config,
+      {headers: headers}
     );
     console.log(resp);
     return resp;
@@ -51,9 +53,7 @@ export const getData = async (endPoint) => {
     const resp = await axios.get(
       process.env.REACT_APP_SERVER_URL + endPoint,
       // config,
-      {
-        headers: headers
-      }
+      {headers: headers}
     );
     console.log(resp);
     return resp;

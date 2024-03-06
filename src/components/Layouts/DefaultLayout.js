@@ -2,6 +2,7 @@ import React, { Suspense, useState } from 'react';
 import {
   DesktopOutlined,
   FileOutlined,
+  HomeOutlined,
   PieChartOutlined,
   ProductOutlined,
   TeamOutlined,
@@ -28,9 +29,9 @@ const projects = [
   {key: '3', label: 'Project 3'},
 ]
 const items = [
-  {key: '', label: 'Home', icon: <ProductOutlined />},
-  {key: 'project', label: 'Projects', icon: <ProductOutlined />, children: projects},
-  {key: 'about', label: 'About Us', icon: <DesktopOutlined />},
+  {key: '', label: 'Home', icon: <HomeOutlined />},
+  {key: '/projects', label: 'Projects', icon: <ProductOutlined />},
+  {key: '/reports', label: 'Reports', icon: <DesktopOutlined />},
 ];
 const App = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -49,9 +50,9 @@ const App = () => {
       <Sider trigger={null} collapsible collapsed={collapsed} /*onCollapse={(value) => setCollapsed(value)}*/>
         <div className="demo-logo-vertical" />
         <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} onClick={item=>{
-            if(item.keyPath.length === 1) navigate(`${item.keyPath[0]}`)
-            else if(item.keyPath.length === 2) navigate(`${item.keyPath[1]}/${item.keyPath[0]}`, {state: {id: item.keyPath[0]}});
-            console.log('Menu-Selected', item);
+          console.log('NAVBAR', item.key)
+            /*if(item.keyPath.length === 1) */navigate(`${item.key}`)
+            // else if(item.keyPath.length === 2) navigate(`${item.keyPath[1]}/${item.keyPath[0]}`, {state: {id: item.keyPath[0]}});
         }} />
       </Sider>
       <Layout>
