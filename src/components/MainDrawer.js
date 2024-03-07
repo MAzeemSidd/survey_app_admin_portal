@@ -92,6 +92,34 @@ const TaskForm = ({data}) => {
   </>)
 }
 
+const SubTaskForm = ({data}) => {
+  return(<>
+    <Row gutter={16}>
+      <Col span={12}>
+        <Form.Item name="name" label="Name" initialValue={data?.name ?? null} validateFirst
+          rules={[
+            {
+              required: true,
+              message: `Name is required`,
+            },
+            {
+              min: 5,
+              message: 'At least 5 characters must be used',
+            },
+          ]}
+        >
+          <Input placeholder="Enter name" />
+        </Form.Item>
+      </Col>
+      <Col span={12}>
+        <Form.Item name="description" label="Descrition" initialValue={data?.description ?? null}>
+          <Input placeholder="Write description" />
+        </Form.Item>
+      </Col>
+    </Row>
+  </>)
+}
+
 const QuestionForm = ({formType, data}) => {
   console.log('Data in QuestionForm', data, formType)
   const options = [
@@ -201,8 +229,8 @@ const MainDrawer = ({open, data=null, onClose, title, formType, submitFunction=(
         return <ProjectForm data={data} />
       case 'Task':
         return <TaskForm data={data} />
-      case 'Sub Task':
-        return <ProjectForm />
+      case 'Sub-Task':
+        return <SubTaskForm data={data} />
       case 'Question':
         return <QuestionForm formType={formType} data={data} />
       default:

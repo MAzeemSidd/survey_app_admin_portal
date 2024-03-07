@@ -1,12 +1,21 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Card, Col, Collapse, Row, Tag, Typography } from 'antd'
 import { DeleteOutlined, DiffOutlined, EditOutlined } from '@ant-design/icons'
 import MainDrawer from '../MainDrawer'
+import { getData, putData } from '../../Services/NetworkService'
 
-const Questions = ({questions}) => {
+const Questions = ({questions, projectId, taskId, getSubTasksandQuestions}) => {
   console.log('--------Questions--------')
+  const [Questions, setQuestions] = useState(null)
   const [addFormVisibility, setAddFormVisibility] = useState(false)
   const [editForm, setEditForm] = useState({visibility: false, data: null})
+
+  useEffect(()=>{
+    console.log(questions, Questions)
+    if(questions){
+      setQuestions(questions)
+    }
+  },[questions])
 
   const handleEditBtnClick = (e, item) => {
     console.log(item)
@@ -17,14 +26,29 @@ const Questions = ({questions}) => {
     e.stopPropagation();
   }
   return (<>
-    <MainDrawer open={addFormVisibility} onClose={()=>setAddFormVisibility(false)} title='Question' formType='Add' />
-    <MainDrawer open={editForm.visibility} data={editForm.data} onClose={()=>setEditForm(prev=>({...prev, visibility: false, data: null}))} title='Question' formType='Edit' />
+    {/* <MainDrawer open={addFormVisibility} onClose={()=>setAddFormVisibility(false)} title='Question' formType='Add' /> */}
+    {editForm.data && <MainDrawer open={editForm.visibility} data={editForm.data} title='Question' formType='Edit'
+      onClose={(resetFields)=>{
+        resetFields();
+        setEditForm(prev=>({...prev, visibility: false, data: null}))
+      }}
+      submitFunction={(fields, resetFields)=>{
+        putData(`projects/${projectId}/tasks/${taskId}/questions/${editForm?.data?.id}`, JSON.stringify({...editForm?.data, ...fields}))
+        .then(res=>{
+          console.log('QuestionAdd-Res', res)
+          resetFields()
+          setEditForm(prev=>({...prev, visibility: false, data: null}))
+          getSubTasksandQuestions();
+        })
+        .catch(e=>console.log('QuestionAdd-Error', e))
+      }}
+    />}
     <Card size='small' type='inner' style={{minHeight: '63vh'}}>
       <Row style={{margin: '15px 0'}}>
         <Col span={24}><Button icon={<DiffOutlined />} onClick={()=>setAddFormVisibility(true)}>Add Questions</Button></Col>
       </Row>
       <Row gutter={[24,24]}>
-        {questions?.map((item, index) => (
+        {Questions?.map((item, index) => (
           <Col key={index} span={24}>
             <Collapse
               items={[

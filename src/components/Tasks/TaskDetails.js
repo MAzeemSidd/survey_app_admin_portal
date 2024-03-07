@@ -3,57 +3,91 @@ import { Col, Row, Typography, Card, Space, Button, Tabs, ConfigProvider } from 
 import React, { useEffect, useState } from 'react'
 import MainDrawer from '../MainDrawer'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { getData } from '../../Services/NetworkService'
+import { getData, postData, putData } from '../../Services/NetworkService'
 import SubTasks from './SubTasks'
 import Questions from './Questions'
 
 const TaskDetails = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [drawerVisibility, setDrawerVisibility] = useState(false);
+  const [subTaskForm, setSubTaskForm] = useState(false);
+  const [questionForm, setQuestionForm] = useState(false)
   const [subTasks, setSubTasks] = useState(null)
   const [questions, setQuestions] = useState(null)
   const [projectId, setProjectId] = useState(null)
   const [taskId, setTaskId] = useState(null)
   const [subTaskId, setSubTaskId] = useState(null)
   // const [title, setTitle] = useState(null);
-  console.log('location', location.state)
+
+  const getSubTasksandQuestions = (_projectId, _taskId) => {
+    console.log('getSUbTasksandQuestions', _projectId, taskId)
+    getData(`projects/${_projectId}/tasks`).then(res=>{
+      console.log('tasks-res',res?.data?.data)
+      const { subTasks, questions } = res?.data?.data?.filter(task=>task.id == _taskId)[0]
+      setSubTasks(subTasks)
+      setQuestions(questions)
+    }).catch(e=>{
+      console.log('tasks-error', e)
+    })
+  }
+
+  const getQuestionsOfSubtasks = (_projectId, _taskId, _subTaskId) => {
+    console.log('getSUbTasksandQuestions', _projectId, taskId)
+    getData(`projects/${_projectId}/tasks`).then(res=>{
+      console.log('tasks-res',res?.data?.data)
+      const task = res?.data?.data?.filter(task=>task.id == _taskId)[0]
+      const questions = task?.subTasks?.filter(task=>task.id == _subTaskId)[0].questions
+      setQuestions(questions)
+    }).catch(e=>{
+      console.log('tasks-error', e)
+    })
+  }
+
+  const getQuestions = () => {
+    getData(`projects/${projectId}/tasks/${taskId}/questions`)
+    .then(res=>{console.log('question-res'); setQuestions(res?.data?.data);}).catch(e=>console.log('Question-Error'))
+  } 
 
   useEffect(()=>{
-    // if(!title) setTitle(tabItems[0].label)
+    if(!subTaskId && projectId && taskId){
+      getSubTasksandQuestions(projectId, taskId)
+      // getQuestions()
+    } else {
+      getQuestionsOfSubtasks(projectId, taskId, subTaskId)
+    }
+  },[projectId, taskId, subTaskId])
+
+  console.log('Location.path',location.pathname)
+  console.log('Location.state',location.state)
+  useEffect(()=>{
     if(location.pathname){
       const _route = location.pathname.split('/');
       var _projectId, _taskId, _subTaskId;
       if(_route[_route.length - 2] !== 'subtask') {
-        _projectId = _route[_route.length - 3]
-        _taskId = _route[_route.length - 1]
+        _projectId = parseInt(_route[_route.length - 3])
+        _taskId = parseInt(_route[_route.length - 1])
       } else {
-        _projectId = _route[_route.length - 5]
-        _taskId = _route[_route.length - 3]
-        _subTaskId = _route[_route.length - 1]
+        _projectId = parseInt(_route[_route.length - 5])
+        _taskId = parseInt(_route[_route.length - 3])
+        _subTaskId = parseInt(_route[_route.length - 1])
       }
       setProjectId(_projectId)
       setTaskId(_taskId)
       setSubTaskId(_subTaskId)
     }
+  },[location.pathname])
+
+  useEffect(()=>{
+    // if(!title) setTitle(tabItems[0].label)
     if(location.state) {
       setSubTasks(location.state?.subTasks)
       setQuestions(location.state?.questions)
-    } else {
-      getData(`projects/${_projectId}/tasks`).then(res=>{
-        console.log('tasks-res',res?.data?.data)
-        const { subTasks, questions } = res?.data?.data?.filter(task=>task.id == _taskId)[0]
-        setSubTasks(subTasks)
-        setQuestions(questions)
-      }).catch(e=>{
-        console.log('tasks-error', e)
-      })
     }
     return ()=>{
       setSubTasks(null)
       setQuestions(null)
     }
-  },[location.state.subTasks, location.state.questions])
+  },[])
 
   // const tabItems = [
   //   {
@@ -69,18 +103,70 @@ const TaskDetails = () => {
   // ]
 
   return (<>
+    <MainDrawer open={subTaskForm} onClose={()=>setSubTaskForm(false)} title='Sub-Task' formType='Add'
+      // submitFunction={(fields, resetFields)=>{
+      //   getData(`projects/${projectId}/tasks`).then(res=>{
+      //     console.log('tasks-res',res?.data?.data)
+      //     const task = res?.data?.data?.filter(item=> item.id == taskId)
+      //     console.log('task', task)
+      //     postData(`projects/${projectId}/tasks/${taskId}`, JSON.stringify({...task, subTasks: {}}))
+      //     .then(res=>{
+      //       getTasks(projectId, taskId)
+      //     })
+      //     .catch(e=>console.log('error'))
+      //   }).catch(e=>{
+      //     console.log('tasks-error', e)
+      //   })
+      // }}
+    />
+    <MainDrawer open={questionForm} onClose={()=>setQuestionForm(false)} title='Question' formType='Add'
+      submitFunction={(fields, resetFields)=>{
+        postData(`projects/${projectId}/tasks/${taskId}/questions`, JSON.stringify(fields.items[0]))
+        .then(res=>{
+          console.log('QuestionAdd-Res', res)
+          resetFields()
+          setQuestionForm(false)
+          getSubTasksandQuestions(projectId, taskId)
+        })
+        .catch(e=>console.log('QuestionAdd-Error', e))
+      }}
+    />
     <Row gutter={[0,12]}>
       <Col span={24}>
         <Typography.Title level={3} style={{color: '#3C4B64'}}>
-          {subTasks?.length !== 0 ? 'Sub Tasks' : 'Questions'}
+          {subTasks?.length !== 0 ? 'Sub Tasks' : questions?.length != 0 ? 'Questions' : 'Task Detail'}
         </Typography.Title>
       </Col>
       <Col span={24}>
-          {
+          {/* {
             subTasks?.length != 0 ?
-              <SubTasks subTasks={subTasks} setOpen={()=>setDrawerVisibility(true)} projectId={projectId} taskId={taskId} />
+              <SubTasks subTasks={subTasks} setOpen={()=>setSubTaskForm(true)} projectId={projectId} taskId={taskId} />
               :
-              <Questions questions={questions} setOpen={()=>setDrawerVisibility(true)} />
+              questions?.length != 0 ?
+                <Questions questions={questions} projectId={projectId} taskId={taskId} getQuestions={()=>getQuestions(projectId, taskId)} />
+                :
+                subTasks?.length == 0 && questionForm?.length == 0 && <>
+                  <Card size='small' type='inner' style={{minHeight: '63vh'}}>
+                    <Row gutter={12} style={{margin: '15px 0'}}>
+                      <Col><Button icon={<AppstoreAddOutlined />} onClick={()=>setSubTaskForm(true)}>Add Sub-Tasks</Button></Col>
+                      <Col><Button icon={<DiffOutlined />} onClick={()=>setQuestionForm(true)}>Add Questions</Button></Col>
+                    </Row>
+                  </Card>
+                </>
+          } */}
+          {
+            subTasks?.length == 0 && questions?.length == 0 ?
+              <Card size='small' type='inner' style={{minHeight: '63vh'}}>
+                <Row gutter={12} style={{margin: '15px 0'}}>
+                  <Col><Button icon={<AppstoreAddOutlined />} onClick={()=>setSubTaskForm(true)}>Add Sub-Tasks</Button></Col>
+                  <Col><Button icon={<DiffOutlined />} onClick={()=>setQuestionForm(true)}>Add Questions</Button></Col>
+                </Row>
+              </Card>
+            :
+            subTasks?.length != 0 ?
+              <SubTasks subTasks={subTasks} setOpen={()=>setSubTaskForm(true)} projectId={projectId} taskId={taskId} />
+              :
+              <Questions questions={questions} projectId={projectId} taskId={taskId} getSubTasksandQuestions={()=>getSubTasksandQuestions(projectId, taskId)} />
           }
           {/* <ConfigProvider
             theme={{

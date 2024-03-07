@@ -1,10 +1,10 @@
-import { AppstoreAddOutlined } from '@ant-design/icons'
-import { Col, Row, Typography, Card, Space, Button } from 'antd'
+import { AppstoreAddOutlined, MoreOutlined } from '@ant-design/icons'
+import { Col, Row, Typography, Card, Space, Button, Dropdown } from 'antd'
 // import Card from 'antd/es/card/Card'
 import React, { useEffect, useState } from 'react'
 import MainDrawer from '../MainDrawer'
 import { useNavigate } from 'react-router-dom'
-import { getData, postData } from '../../Services/NetworkService'
+import { getData, postData, putData } from '../../Services/NetworkService'
 import axios from 'axios'
 
 const Projects = () => {
@@ -50,7 +50,7 @@ const Projects = () => {
         .catch(e=>console.log('projectAdd-error',e))
       }} />
 
-      {editForm.data && <MainDrawer open={editForm.visibility} data={editForm.data} title='Project'
+      {editForm.data && <MainDrawer open={editForm.visibility} data={editForm.data} title='Project' formType='Edit'
         onClose={(resetFields)=>{
           resetFields();
           setEditForm(prev=>({...prev, visibility: false, data: null}));
@@ -58,17 +58,18 @@ const Projects = () => {
         submitFunction={(fields, resetFields)=>{
           putData(`projects/${editForm?.data?.id}`, JSON.stringify({...fields, id: editForm?.data?.id}))
           .then(res=>{
-            console.log('taskAdd-res', res)
-            getData(`projects`).then(res=>{
-              setProjectData(res?.data?.data)
-              console.log('project-res', res?.data?.data);
+            console.log('projectAdd-res', res)
+            getData('projects')
+            .then((res) => {
+                setProjectData(res?.data?.data)
+                console.log('project-res', res?.data?.data);
             }).catch(e=>{
-              console.log('tasks-error', e)
+                console.log('project-error', e);
             })
             resetFields()
             setEditForm(prev=>({...prev, visibility: false, data: null}));
           })
-          .catch(e=>console.log('taskAdd-error',e))
+          .catch(e=>console.log('project-error',e))
         }}
       />}
 
@@ -79,11 +80,31 @@ const Projects = () => {
       <Row gutter={[12,12]}>
         {projectData?.map((item, index) => (
           <Col key={index} span={6}>
-            <Card size='small' style={{border: '.5px solid #e0e0e0'}} hoverable onClick={()=>navigate(`/project/${item.id}`)}>
-              <Typography.Text style={{fontSize: 16, fontWeight: 500, color: '#3C4B64'}}>{item.name}</Typography.Text>
-              <Typography.Paragraph ellipsis={{ rows: 3 }}>
-                <Typography.Text style={{fontSize: 10}}>{item.description}</Typography.Text>
-              </Typography.Paragraph>
+            <Card size='small' style={{border: '.5px solid #e0e0e0', height: 110}} hoverable onClick={()=>navigate(`/project/${item.id}`)}>
+              <Row>
+                <Col span={22}>
+                  <Typography.Text ellipsis={true} style={{fontSize: 16, fontWeight: 500, color: '#3C4B64'}}>{item.name}</Typography.Text>
+                </Col>
+                <Col span={2}>
+                  <Dropdown
+                    menu={{
+                      items: [
+                        {key: 0, label: <Button type='link' size='small' style={{color: '#000'}}
+                          onClick={e=>{e.stopPropagation(); setEditForm(prev=>({...prev, visibility: true, data: item}));}}>Edit Project</Button>},
+                        {key: 1, label: <Button type='link' size='small' style={{color: '#f00'}} onClick={e=>{e.stopPropagation();}}>Delete Project`</Button>}
+                      ]
+                    }}
+                    // trigger={['click']}
+                  >
+                    <Button type='text' size='middle' shape='circle' onClick={e=>{e.stopPropagation();}}><MoreOutlined style={{fontSize: 16}} /></Button>
+                  </Dropdown>
+                </Col>
+                <Col>
+                  <Typography.Paragraph ellipsis={{ rows: 2 }}>
+                    <Typography.Text style={{fontSize: 10}}>{item.description}</Typography.Text>
+                  </Typography.Paragraph>
+                </Col>
+              </Row>
             </Card>
           </Col>
         ))}
