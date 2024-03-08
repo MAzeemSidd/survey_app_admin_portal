@@ -230,7 +230,7 @@ const MainDrawer = ({open, data=null, onClose, title, formType, submitFunction=(
       case 'Task':
         return <TaskForm data={data} />
       case 'Sub-Task':
-        return <SubTaskForm data={data} />
+        return <TaskForm data={data} />
       case 'Question':
         return <QuestionForm formType={formType} data={data} />
       default:

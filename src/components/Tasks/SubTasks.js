@@ -3,13 +3,26 @@ import { Button, Card, Col, Row, Typography } from 'antd'
 import { AppstoreAddOutlined } from '@ant-design/icons'
 import MainDrawer from '../MainDrawer'
 import { useNavigate } from 'react-router-dom'
+import { postData } from '../../Services/NetworkService'
 
-const SubTasks = ({subTasks, projectId, taskId}) => {
+const SubTasks = ({subTasks, projectId, taskId, getSubTasksandQuestions}) => {
   console.log('--------Sub Tasks--------')
   const navigate = useNavigate()
   const [drawerVisibility, setDrawerVisibility] = useState(false)
   return (<>
-    <MainDrawer open={drawerVisibility} onClose={()=>setDrawerVisibility(false)} title='Sub Task' />
+    <MainDrawer open={drawerVisibility} title='Sub-Task' formType='Add'
+      onClose={()=>setDrawerVisibility(false)}
+      submitFunction={(fields, resetFields)=>{
+        postData(`projects/${projectId}/tasks`, JSON.stringify({...fields, parent: taskId}))
+        .then(res=>{
+          console.log('taskAdd-res', res)
+          resetFields()
+          getSubTasksandQuestions()
+          setDrawerVisibility(false)
+        })
+        .catch(e=>console.log('taskAdd-error',e))
+      }}
+    />
     <Card size='small' type='inner' style={{minHeight: '63vh'}}>
       <Row style={{margin: '15px 0'}}>
         <Col span={24}><Button icon={<AppstoreAddOutlined />} onClick={()=>setDrawerVisibility(true)}>Add Sub Tasks</Button></Col>

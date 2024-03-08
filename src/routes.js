@@ -4,6 +4,7 @@ const Homepage = React.lazy(()=>import('./components/homepage/Homepage'))
 const Projects = React.lazy(() => import('./components/projects/Projects'))
 const ProjectDetails = React.lazy(() => import('./components/projects/ProjectDetails'))
 const TaskDetails = React.lazy(() => import('./components/Tasks/TaskDetails'))
+const Tasks = React.lazy(()=>import('./components/Tasks/Tasks'))
 
 const routes = [
     { path: '', name: 'Home', element: Homepage },

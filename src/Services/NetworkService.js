@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c21hbiIsImV4cCI6MTcwOTgzNTQzMCwiaWF0IjoxNzA5ODE3NDMwfQ.wF3RuLlPXlnZjIGGj0yMVwgQ0bb_5wcNTo2YWBSE-ngwHqv08YkKkpMFKUQgpeaxmnItJTWNtOriG6cDY6Hacg'
+const token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c21hbiIsImV4cCI6MTcwOTkyNjI5MSwiaWF0IjoxNzA5OTA4MjkxfQ.0LX1yBxGU_k_oP1rmtO8U3Xo8TlOJtqV275p12PERbSQIQRykoNbSPjDydqJuuIRrweTeP1B4an1gQbPgxt4Tg'
 
 const config = { withCredentials: true };
 const headers = {'Authorization':`Bearer ${token}`, 'Content-Type':'application/json'}
@@ -91,7 +91,8 @@ export const deleteData = async (endPoint) => {
   try {
     const resp = await axios.delete(
       process.env.REACT_APP_SERVER_URL + endPoint,
-      config
+      // config
+      {headers: headers}
     );
     console.log(resp);
     return resp;

@@ -22,7 +22,7 @@ const TaskDetails = () => {
   const getSubTasksandQuestions = (_projectId, _taskId) => {
     console.log('getSUbTasksandQuestions', _projectId, taskId)
     getData(`projects/${_projectId}/tasks`).then(res=>{
-      console.log('tasks-res',res?.data?.data)
+      console.log('tasks-res-GET',res?.data?.data)
       const { subTasks, questions } = res?.data?.data?.filter(task=>task.id == _taskId)[0]
       setSubTasks(subTasks)
       setQuestions(questions)
@@ -87,37 +87,19 @@ const TaskDetails = () => {
       setSubTasks(null)
       setQuestions(null)
     }
-  },[])
-
-  // const tabItems = [
-  //   {
-  //     label: 'Sub Tasks',
-  //     children: <SubTasks subTasks={subTasks} setOpen={()=>setDrawerVisibility(true)} />,
-  //     icon: <AppstoreOutlined />,
-  //   },
-  //   {
-  //     label: 'Questions',
-  //     children: <Questions questions={questions} setOpen={()=>setDrawerVisibility(true)} />,
-  //     icon: <QuestionCircleOutlined />,
-  //   }
-  // ]
+  },[location?.state?.subTasks, location?.state?.questions])
 
   return (<>
     <MainDrawer open={subTaskForm} onClose={()=>setSubTaskForm(false)} title='Sub-Task' formType='Add'
-      // submitFunction={(fields, resetFields)=>{
-      //   getData(`projects/${projectId}/tasks`).then(res=>{
-      //     console.log('tasks-res',res?.data?.data)
-      //     const task = res?.data?.data?.filter(item=> item.id == taskId)
-      //     console.log('task', task)
-      //     postData(`projects/${projectId}/tasks/${taskId}`, JSON.stringify({...task, subTasks: {}}))
-      //     .then(res=>{
-      //       getTasks(projectId, taskId)
-      //     })
-      //     .catch(e=>console.log('error'))
-      //   }).catch(e=>{
-      //     console.log('tasks-error', e)
-      //   })
-      // }}
+      submitFunction={(fields, resetFields)=>{
+        postData(`projects/${projectId}/tasks`, JSON.stringify({...fields, parent: taskId}))
+        .then(res=>{
+          console.log('taskAdd-res', res)
+          resetFields()
+          getSubTasksandQuestions(projectId, taskId)
+        })
+        .catch(e=>console.log('taskAdd-error',e))
+      }}
     />
     <MainDrawer open={questionForm} onClose={()=>setQuestionForm(false)} title='Question' formType='Add'
       submitFunction={(fields, resetFields)=>{
@@ -153,20 +135,25 @@ const TaskDetails = () => {
                     </Row>
                   </Card>
                 </>
-          } */}
+              } */}
           {
-            subTasks?.length == 0 && questions?.length == 0 ?
+            subTaskId ?
+            <Questions questions={questions} projectId={projectId} taskId={subTaskId} getSubTasksandQuestions={()=>getQuestionsOfSubtasks(projectId, taskId, subTaskId)} />
+            :
+            (
+              subTasks?.length == 0 && questions?.length == 0 ?
               <Card size='small' type='inner' style={{minHeight: '63vh'}}>
                 <Row gutter={12} style={{margin: '15px 0'}}>
                   <Col><Button icon={<AppstoreAddOutlined />} onClick={()=>setSubTaskForm(true)}>Add Sub-Tasks</Button></Col>
                   <Col><Button icon={<DiffOutlined />} onClick={()=>setQuestionForm(true)}>Add Questions</Button></Col>
                 </Row>
               </Card>
-            :
-            subTasks?.length != 0 ?
-              <SubTasks subTasks={subTasks} setOpen={()=>setSubTaskForm(true)} projectId={projectId} taskId={taskId} />
               :
-              <Questions questions={questions} projectId={projectId} taskId={taskId} getSubTasksandQuestions={()=>getSubTasksandQuestions(projectId, taskId)} />
+              subTasks?.length != 0 ?
+                <SubTasks subTasks={subTasks} setOpen={()=>setSubTaskForm(true)} projectId={projectId} taskId={taskId} getSubTasksandQuestions={()=>getSubTasksandQuestions(projectId, taskId)} />
+                :
+                <Questions questions={questions} projectId={projectId} taskId={taskId} getSubTasksandQuestions={()=>getSubTasksandQuestions(projectId, taskId)} />
+            )  
           }
           {/* <ConfigProvider
             theme={{
@@ -208,3 +195,9 @@ const TaskDetails = () => {
 
 export default TaskDetails
 
+// subtask:[
+//   ...
+//   questions:[
+//     ...
+//   ]
+// ]
