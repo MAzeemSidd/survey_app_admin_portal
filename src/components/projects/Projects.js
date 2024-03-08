@@ -4,7 +4,7 @@ import { Col, Row, Typography, Card, Space, Button } from 'antd'
 import React, { useEffect, useState } from 'react'
 import MainDrawer from '../MainDrawer'
 import { useNavigate } from 'react-router-dom'
-import { getData, postData } from '../../Services/NetworkService'
+import { getData, postData,putData } from '../../Services/NetworkService'
 import axios from 'axios'
 
 const Projects = () => {

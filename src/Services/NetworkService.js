@@ -3,7 +3,7 @@ import axios from "axios";
 const token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c21hbiIsImV4cCI6MTcwOTczODA0MSwiaWF0IjoxNzA5NzIwMDQxfQ.u6J9qDzAaDETdG4meExX9vhPRoF-yDmjw6O0z15tvWN3HH3Kg28ULKF4YM-EEeTigBJG8G77c9gg-R05Ozs5Lg'
 
 const config = { withCredentials: true };
-const headers = {'Authorization':`Bearer ${token}`, 'Content-Type':'application/json'}
+const headers = {'Authorization':`Bearer ${localStorage.getItem("jwtToken")}`, 'Content-Type':'application/json'}
 
 export const postData = async (endPoint, data) => {
   try {
