@@ -16,9 +16,9 @@ const SubTasks = ({subTasks, projectId, taskId, getSubTasksandQuestions}) => {
         postData(`projects/${projectId}/tasks`, JSON.stringify({...fields, parent: taskId}))
         .then(res=>{
           console.log('taskAdd-res', res)
-          resetFields()
           getSubTasksandQuestions()
           setDrawerVisibility(false)
+          resetFields()
         })
         .catch(e=>console.log('taskAdd-error',e))
       }}
@@ -28,8 +28,8 @@ const SubTasks = ({subTasks, projectId, taskId, getSubTasksandQuestions}) => {
         <Col span={24}><Button icon={<AppstoreAddOutlined />} onClick={()=>setDrawerVisibility(true)}>Add Sub Tasks</Button></Col>
       </Row>
       <Row gutter={[24,24]}>
-        {subTasks?.map((item, index) => (
-          <Col key={index} span={6}>
+        {subTasks?.sort((a, b) => a.id - b.id).map(item => (
+          <Col key={item.id} span={6}>
             <Card size='small' style={{border: '.5px solid #e0e0e0'}} hoverable onClick={()=>navigate(`/project/${projectId}/task/${taskId}/subtask/${item.id}`, {state: {subTasks: item.subTasks, questions: item.questions}})}>
               <Typography.Text style={{fontSize: 16, fontWeight: 500, color: '#3C4B64'}}>{item.name}</Typography.Text>
               <Typography.Paragraph>

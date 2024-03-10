@@ -49,11 +49,12 @@ const TaskDetails = () => {
   } 
 
   useEffect(()=>{
-    if(!subTaskId && projectId && taskId){
-      getSubTasksandQuestions(projectId, taskId)
-      // getQuestions()
-    } else {
-      getQuestionsOfSubtasks(projectId, taskId, subTaskId)
+    if(projectId && taskId) {
+      if(!subTaskId) {
+        getSubTasksandQuestions(projectId, taskId)
+      } else {
+        getQuestionsOfSubtasks(projectId, taskId, subTaskId)
+      }
     }
   },[projectId, taskId, subTaskId])
 
@@ -66,6 +67,7 @@ const TaskDetails = () => {
       if(_route[_route.length - 2] !== 'subtask') {
         _projectId = parseInt(_route[_route.length - 3])
         _taskId = parseInt(_route[_route.length - 1])
+        _subTaskId = null
       } else {
         _projectId = parseInt(_route[_route.length - 5])
         _taskId = parseInt(_route[_route.length - 3])
@@ -75,19 +77,26 @@ const TaskDetails = () => {
       setTaskId(_taskId)
       setSubTaskId(_subTaskId)
     }
-  },[location.pathname])
-
-  useEffect(()=>{
-    // if(!title) setTitle(tabItems[0].label)
-    if(location.state) {
-      setSubTasks(location.state?.subTasks)
-      setQuestions(location.state?.questions)
-    }
     return ()=>{
       setSubTasks(null)
       setQuestions(null)
+      setProjectId(null)
+      setTaskId(null)
+      setSubTaskId(null)
     }
-  },[location?.state?.subTasks, location?.state?.questions])
+  },[location.pathname])
+
+  // useEffect(()=>{
+  //   // if(!title) setTitle(tabItems[0].label)
+  //   if(location.state) {
+  //     setSubTasks(location.state?.subTasks)
+  //     setQuestions(location.state?.questions)
+  //   }
+  //   return ()=>{
+  //     setSubTasks(null)
+  //     setQuestions(null)
+  //   }
+  // },[location?.state?.subTasks, location?.state?.questions])
 
   return (<>
     <MainDrawer open={subTaskForm} onClose={()=>setSubTaskForm(false)} title='Sub-Task' formType='Add'
@@ -95,8 +104,9 @@ const TaskDetails = () => {
         postData(`projects/${projectId}/tasks`, JSON.stringify({...fields, parent: taskId}))
         .then(res=>{
           console.log('taskAdd-res', res)
-          resetFields()
           getSubTasksandQuestions(projectId, taskId)
+          setSubTaskForm(false)
+          resetFields()
         })
         .catch(e=>console.log('taskAdd-error',e))
       }}
