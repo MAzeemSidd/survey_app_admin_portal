@@ -12,8 +12,7 @@ function App() {
       <Suspense fallback={<Spin spinning={true}/>}>
         <Routes>
           <Route path="/" name="Login" element={<Login />} />
-          <Route path="/home" name="Home" element={<DefaultLayout />} />
-          <Route path="/projects" name="Project" element={<Projects />} />
+          <Route path="*" name="Home" element={<DefaultLayout />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

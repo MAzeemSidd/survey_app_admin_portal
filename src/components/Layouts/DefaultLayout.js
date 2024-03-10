@@ -29,7 +29,7 @@ const projects = [
   {key: '3', label: 'Project 3'},
 ]
 const items = [
-  {key: '', label: 'Home', icon: <HomeOutlined />},
+  {key: '/home', label: 'Home', icon: <HomeOutlined />},
   {key: '/projects', label: 'Projects', icon: <ProductOutlined />},
   {key: '/reports', label: 'Reports', icon: <DesktopOutlined />},
 ];
