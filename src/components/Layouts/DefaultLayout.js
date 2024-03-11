@@ -55,11 +55,11 @@ const App = () => {
             // else if(item.keyPath.length === 2) navigate(`${item.keyPath[1]}/${item.keyPath[0]}`, {state: {id: item.keyPath[0]}});
         }} />
       </Sider>
-      <Layout style={{height: "100vh"}}>
+      <Layout /*style={{height: "100vh"}}*/style={{overflowX: 'hidden', overflowY: 'scroll'}}>
         <Header style={{padding: 0, background: colorBgContainer}}>
           <Button type='text' size='large' onClick={()=>setCollapsed(prev=>!prev)}><UnorderedListOutlined style={{fontSize: 20}} /></Button>
         </Header>
-        <Content style={{margin: '0 16px', overflow: "auto"/*, '&::WebkitScrollbarTrack': {boxShadow: 'inset 0 0 6px rgba(0, 0, 0, 0.3)'}*/}}>
+        <Content style={{margin: '0 16px', /*overflowX: 'hidden', overflowY: 'scroll' /*, '&::WebkitScrollbarTrack': {boxShadow: 'inset 0 0 6px rgba(0, 0, 0, 0.3)'}*/}}>
           {/* <Breadcrumb style={{margin: '16px 0'}}>
             <Breadcrumb.Item>User</Breadcrumb.Item>
             <Breadcrumb.Item>Bill</Breadcrumb.Item>

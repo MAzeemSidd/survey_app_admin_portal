@@ -1,11 +1,13 @@
-import { AppstoreAddOutlined, MoreOutlined } from '@ant-design/icons'
-import { Col, Row, Typography, Card, Space, Button, Dropdown } from 'antd'
-// import Card from 'antd/es/card/Card'
 import React, { useEffect, useState } from 'react'
-import MainDrawer from '../MainDrawer'
-import { useNavigate } from 'react-router-dom'
+import { Col, Row, Typography, Card, Space, Button, Dropdown, Modal } from 'antd'
+import { AppstoreAddOutlined, MoreOutlined } from '@ant-design/icons'
 import { getData, postData, putData } from '../../Services/NetworkService'
+import { useNavigate } from 'react-router-dom'
+import MainDrawer from '../MainDrawer'
+import OptionsDropdown from '../others/OptionsDropdown'
 import axios from 'axios'
+import { optionsModal } from '../../functions/optionsModal'
+
 
 const Projects = () => {
   const navigate = useNavigate();
@@ -13,6 +15,17 @@ const Projects = () => {
   const [editForm, setEditForm] = useState({visibility: false, data: null})
   const [projectData, setProjectData] = useState(null)
   console.log('projectData', projectData)
+
+  // const optionsModal = (title, content, onOk=()=>{}, onCancel=()=>{}) => {
+  //   let body = {
+  //     title: title,
+  //     content: content,
+  //     onOk: onOk(),
+  //     onCancel: onCancel()
+  //   }
+  
+  //   Modal.confirm(body);
+  // }
 
   useEffect(()=>{
     // axios.get(process.env.REACT_APP_SERVER_URL+'users',
@@ -86,7 +99,17 @@ const Projects = () => {
                   <Typography.Text ellipsis={true} style={{fontSize: 16, fontWeight: 500, color: '#3C4B64'}}>{item.name}</Typography.Text>
                 </Col>
                 <Col span={2}>
-                  <Dropdown
+                  <OptionsDropdown
+                    onEdit={()=>setEditForm(prev=>({...prev, visibility: true, data: item}))}
+                    onDelete={()=>optionsModal(
+                      'Confirmation',
+                      'Are you sure you want to delete this project?',
+                      () => {console.log('onOk');},
+                      () => {console.log('onCencel');}
+                    )}
+                    onDuplicate={()=>{}}
+                  />
+                  {/* <Dropdown
                     menu={{
                       items: [
                         {key: 0, label: <Button type='link' size='small' style={{color: '#000'}}
@@ -97,7 +120,7 @@ const Projects = () => {
                     // trigger={['click']}
                   >
                     <Button type='text' size='middle' shape='circle' onClick={e=>{e.stopPropagation();}}><MoreOutlined style={{fontSize: 16}} /></Button>
-                  </Dropdown>
+                  </Dropdown> */}
                 </Col>
                 <Col>
                   <Typography.Paragraph ellipsis={{ rows: 2 }}>

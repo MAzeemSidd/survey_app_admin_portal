@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c21hbiIsImV4cCI6MTcxMDA5OTEzNCwiaWF0IjoxNzEwMDgxMTM0fQ.8c1RJxqQ8xQaL38dFZ0InROPlp20IMBQFt53tRJs2lqRcRUrJf4gKE8uDgVNB6fR1pP5_EGlg1REKmm3zM1Bng'
+const token = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c21hbiIsImV4cCI6MTcxMDE2NjAyMywiaWF0IjoxNzEwMTQ4MDIzfQ.tb99ck_rb2xvqv9bHul2gyftkpEn6tKv_R_9z6QSMhSpQXPSN1kpR8xEwJRlALI84rquuxC-J7Bhwg-Po2ov-g'
 
 const config = { withCredentials: true };
 const headers = {'Authorization':`Bearer ${token}`, 'Content-Type':'application/json'}
