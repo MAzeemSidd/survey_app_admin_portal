@@ -101,7 +101,7 @@ const TaskDetails = () => {
   return (<>
     <MainDrawer open={subTaskForm} onClose={()=>setSubTaskForm(false)} title='Sub-Task' formType='Add'
       submitFunction={(fields, resetFields)=>{
-        postData(`projects/${projectId}/tasks`, JSON.stringify({...fields, parent: taskId}))
+        postData(`projects/${projectId}/tasks/${taskId}/subtasks`, JSON.stringify(fields))
         .then(res=>{
           console.log('taskAdd-res', res)
           getSubTasksandQuestions(projectId, taskId)

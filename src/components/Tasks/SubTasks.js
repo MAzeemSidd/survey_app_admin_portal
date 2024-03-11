@@ -3,19 +3,22 @@ import { Button, Card, Col, Row, Typography } from 'antd'
 import { AppstoreAddOutlined } from '@ant-design/icons'
 import MainDrawer from '../MainDrawer'
 import { useNavigate } from 'react-router-dom'
-import { postData } from '../../Services/NetworkService'
+import { postData, putData } from '../../Services/NetworkService'
+import OptionsDropdown from '../others/OptionsDropdown'
+import { optionsModal } from '../../functions/optionsModal'
 
 const SubTasks = ({subTasks, projectId, taskId, getSubTasksandQuestions}) => {
   console.log('--------Sub Tasks--------')
   const navigate = useNavigate()
   const [drawerVisibility, setDrawerVisibility] = useState(false)
+  const [editForm, setEditForm] = useState({visibility: true, data: null})
   return (<>
     <MainDrawer open={drawerVisibility} title='Sub-Task' formType='Add'
       onClose={()=>setDrawerVisibility(false)}
       submitFunction={(fields, resetFields)=>{
-        postData(`projects/${projectId}/tasks`, JSON.stringify({...fields, parent: taskId}))
+        postData(`projects/${projectId}/tasks/${taskId}/subtasks`, JSON.stringify(fields))
         .then(res=>{
-          console.log('taskAdd-res', res)
+          console.log('SubtaskAdd-res', res)
           getSubTasksandQuestions()
           setDrawerVisibility(false)
           resetFields()
@@ -23,18 +26,69 @@ const SubTasks = ({subTasks, projectId, taskId, getSubTasksandQuestions}) => {
         .catch(e=>console.log('taskAdd-error',e))
       }}
     />
+    {editForm.data && <MainDrawer open={editForm.visibility} data={editForm.data} title='Task' formType='Edit'
+        onClose={(resetFields)=>{
+          resetFields();
+          setEditForm(prev=>({...prev, visibility: false, data: null}));
+        }}
+        submitFunction={(fields, resetFields)=>{
+          putData(`projects/${projectId}/tasks/${editForm?.data?.id}`, JSON.stringify({...fields, id: editForm?.data?.id}))
+          .then(res=>{
+            console.log('SubtaskAdd-res', res)
+            getSubTasksandQuestions()
+            resetFields()
+            setEditForm(prev=>({...prev, visibility: false, data: null}));
+          })
+          .catch(e=>console.log('taskAdd-error',e))
+        }}
+      />}
     <Card size='small' type='inner' style={{minHeight: '63vh'}}>
       <Row style={{margin: '15px 0'}}>
         <Col span={24}><Button icon={<AppstoreAddOutlined />} onClick={()=>setDrawerVisibility(true)}>Add Sub Tasks</Button></Col>
       </Row>
       <Row gutter={[24,24]}>
         {subTasks?.sort((a, b) => a.id - b.id).map(item => (
-          <Col key={item.id} span={6}>
-            <Card size='small' style={{border: '.5px solid #e0e0e0'}} hoverable onClick={()=>navigate(`/project/${projectId}/task/${taskId}/subtask/${item.id}`, {state: {subTasks: item.subTasks, questions: item.questions}})}>
-              <Typography.Text style={{fontSize: 16, fontWeight: 500, color: '#3C4B64'}}>{item.name}</Typography.Text>
-              <Typography.Paragraph>
-                <Typography.Text>{item.description}</Typography.Text>
-              </Typography.Paragraph>
+          <Col key={item.id} span={8}>
+            <Card size='small' style={{border: '.5px solid #e0e0e0', height: 110}} hoverable onClick={()=>navigate(`/project/${projectId}/task/${taskId}/subtask/${item.id}`/*, {state: {subTasks: item.subTasks, questions: item.questions}}*/)}>
+            <Row>
+              <Col span={22}>
+                <Typography.Text ellipsis={true} style={{fontSize: 16, fontWeight: 500, color: '#3C4B64'}}>{item.name}</Typography.Text>
+              </Col>
+              <Col span={2}>
+                <OptionsDropdown
+                  onEdit={()=>setEditForm(prev=>({...prev, visibility: true, data: item}))}
+                  onDelete={()=>optionsModal(
+                    'Confirmation',
+                    'Are you sure you want to delete this project?',
+                    () => {},
+                    () => {},
+                    'Yes',
+                    'No'
+                  )}
+                  onDuplicate={()=>optionsModal(
+                    'Confirmation',
+                    'This action will a copy of this project. Do you want to procees?',
+                    () => {
+                      console.log('onOk');
+                      postData('duplicate', JSON.stringify({taskId: item.id, projectId: projectId}))
+                      .then(res=>{
+                        console.log('Duplicate-Res', res)
+                        getSubTasksandQuestions();
+                      })
+                      .catch(e=>console.log('Duplicate-Error', e))
+                    },
+                    () => {console.log('onCencel');},
+                    'Yes',
+                    'No'
+                  )}
+                />
+              </Col>
+              <Col span={22}>
+                <Typography.Paragraph ellipsis={{ rows: 2 }}>
+                  <Typography.Text style={{fontSize: 10}}>{item.description}</Typography.Text>
+                </Typography.Paragraph>  
+              </Col>
+            </Row>
             </Card>
           </Col>
         ))}

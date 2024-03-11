@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { Col, Row, Typography, Card, Space, Button, Dropdown, Modal } from 'antd'
+import { Col, Row, Typography, Card, Space, Button, Dropdown, Modal, notification } from 'antd'
 import { AppstoreAddOutlined, MoreOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
-import { getData, postData,putData } from '../../Services/NetworkService'
+import { deleteData, getData, postData,putData } from '../../Services/NetworkService'
 import MainDrawer from '../MainDrawer'
 import OptionsDropdown from '../others/OptionsDropdown'
 import axios from 'axios'
 import { optionsModal } from '../../functions/optionsModal'
+import { openNotification } from '../../functions/openNotification'
 
 
 const Projects = () => {
@@ -16,25 +17,7 @@ const Projects = () => {
   const [projectData, setProjectData] = useState(null)
   console.log('projectData', projectData)
 
-  // const optionsModal = (title, content, onOk=()=>{}, onCancel=()=>{}) => {
-  //   let body = {
-  //     title: title,
-  //     content: content,
-  //     onOk: onOk(),
-  //     onCancel: onCancel()
-  //   }
-  
-  //   Modal.confirm(body);
-  // }
-
-  useEffect(()=>{
-    // axios.get(process.env.REACT_APP_SERVER_URL+'users',
-    //  {
-    //    headers: {
-    //     'Content-Type':'application/json',
-    //     'Authorization':'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c21hbiIsImV4cCI6MTcwOTEzNTkxMSwiaWF0IjoxNzA5MTE3OTExfQ.Oms1CLc-Cq8L-MiConQt7xd8gnQZB4dy4picdl2czS7Z3sO59qJ7WQE3R-qg9ty108-eT9huAt5fA5Xih6sCtw',
-    //    }
-    //  })
+  const getProjectsApi = () => {
     getData('projects')
      .then((res) => {
         setProjectData(res?.data?.data)
@@ -42,26 +25,33 @@ const Projects = () => {
      }).catch(e=>{
         console.log('project-error', e);
      })
+  }
+
+  useEffect(()=>{
+    getProjectsApi()
   },[])
 
   return (
     <div>
-      <MainDrawer open={drawerVisibility} formType='Add' onClose={()=>setDrawerVisibility(false)} title='Project' submitFunction={(fields, resetFields)=>{
-        postData('projects', JSON.stringify(fields))
-        .then(res=>{
-          console.log('projectAdd-res', res)
-          getData('projects')
-          .then((res) => {
-              setProjectData(res?.data?.data)
-              console.log('project-res', res?.data?.data);
-          }).catch(e=>{
-              console.log('project-error', e);
+      <MainDrawer open={drawerVisibility} formType='Add' title='Project'
+        onClose={()=>setDrawerVisibility(false)}
+        submitFunction={(fields, resetFields)=>{
+          postData('projects', JSON.stringify(fields))
+          .then(res=>{
+            console.log('projectAdd-res', res)
+            getData('projects')
+            .then((res) => {
+                setProjectData(res?.data?.data)
+                console.log('project-res', res?.data?.data);
+            }).catch(e=>{
+                console.log('project-error', e);
+            })
+            resetFields()
+            setDrawerVisibility(false)
           })
-          resetFields()
-          setDrawerVisibility(false)
-        })
-        .catch(e=>console.log('projectAdd-error',e))
-      }} />
+          .catch(e=>console.log('projectAdd-error',e))
+        }}
+      />
 
       {editForm.data && <MainDrawer open={editForm.visibility} data={editForm.data} title='Project' formType='Edit'
         onClose={(resetFields)=>{
@@ -104,23 +94,32 @@ const Projects = () => {
                     onDelete={()=>optionsModal(
                       'Confirmation',
                       'Are you sure you want to delete this project?',
-                      () => {console.log('onOk');},
-                      () => {console.log('onCencel');}
+                      () => {
+                        console.log('onOk');
+                        deleteData(`projects/${item.id}`)
+                        .then(res=>{
+                          console.log('ProjectDelete-Res', res);
+                          if(res?.response?.status === 500){
+                            openNotification('Error', 'This Project can not be deleted as it contains Tasks.')
+                          } else {
+                            getProjectsApi();
+                          }
+                        })
+                        .catch(e=>console.log('ProjectDelete-Error', e))
+                      },
+                      () => {},
+                      'Yes',
+                      'No'
                     )}
-                    onDuplicate={()=>{}}
+                    onDuplicate={()=>optionsModal(
+                      'Confirmation',
+                      'This action will a copy of this project. Do you want to procees?',
+                      () => {console.log('onOk');},
+                      () => {console.log('onCencel');},
+                      'Yes',
+                      'No'
+                    )}
                   />
-                  {/* <Dropdown
-                    menu={{
-                      items: [
-                        {key: 0, label: <Button type='link' size='small' style={{color: '#000'}}
-                          onClick={e=>{e.stopPropagation(); setEditForm(prev=>({...prev, visibility: true, data: item}));}}>Edit Project</Button>},
-                        {key: 1, label: <Button type='link' size='small' style={{color: '#f00'}} onClick={e=>{e.stopPropagation();}}>Delete Project`</Button>}
-                      ]
-                    }}
-                    // trigger={['click']}
-                  >
-                    <Button type='text' size='middle' shape='circle' onClick={e=>{e.stopPropagation();}}><MoreOutlined style={{fontSize: 16}} /></Button>
-                  </Dropdown> */}
                 </Col>
                 <Col>
                   <Typography.Paragraph ellipsis={{ rows: 2 }}>
