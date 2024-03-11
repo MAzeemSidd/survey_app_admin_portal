@@ -3,9 +3,10 @@ import { Button, Card, Col, Row, Typography } from 'antd'
 import { AppstoreAddOutlined } from '@ant-design/icons'
 import MainDrawer from '../MainDrawer'
 import { useNavigate } from 'react-router-dom'
-import { postData, putData } from '../../Services/NetworkService'
+import { deleteData, postData, putData } from '../../Services/NetworkService'
 import OptionsDropdown from '../others/OptionsDropdown'
 import { optionsModal } from '../../functions/optionsModal'
+import { openNotification } from '../../functions/openNotification'
 
 const SubTasks = ({subTasks, projectId, taskId, getSubTasksandQuestions}) => {
   console.log('--------Sub Tasks--------')
@@ -59,8 +60,20 @@ const SubTasks = ({subTasks, projectId, taskId, getSubTasksandQuestions}) => {
                   onEdit={()=>setEditForm(prev=>({...prev, visibility: true, data: item}))}
                   onDelete={()=>optionsModal(
                     'Confirmation',
-                    'Are you sure you want to delete this project?',
-                    () => {},
+                    'Are you sure you want to delete this Subtask?',
+                    () => {
+                      console.log('onOk');
+                      deleteData(`tasks/${item.id}`)
+                      .then(res=>{
+                        console.log('SubTaskDelete-Res', res);
+                        if(res?.response?.status === 500){
+                          openNotification('Error', 'This Task can not be deleted as it contains Questions.')
+                        } else {
+                          getSubTasksandQuestions();
+                        }
+                      })
+                      .catch(e=>console.log('SubTaskDelete-Error', e))
+                    },
                     () => {},
                     'Yes',
                     'No'

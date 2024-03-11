@@ -91,26 +91,26 @@ const Projects = () => {
                 <Col span={2}>
                   <OptionsDropdown
                     onEdit={()=>setEditForm(prev=>({...prev, visibility: true, data: item}))}
-                    onDelete={()=>optionsModal(
-                      'Confirmation',
-                      'Are you sure you want to delete this project?',
-                      () => {
-                        console.log('onOk');
-                        deleteData(`projects/${item.id}`)
-                        .then(res=>{
-                          console.log('ProjectDelete-Res', res);
-                          if(res?.response?.status === 500){
-                            openNotification('Error', 'This Project can not be deleted as it contains Tasks.')
-                          } else {
-                            getProjectsApi();
-                          }
-                        })
-                        .catch(e=>console.log('ProjectDelete-Error', e))
-                      },
-                      () => {},
-                      'Yes',
-                      'No'
-                    )}
+                    // onDelete={()=>optionsModal(
+                    //   'Confirmation',
+                    //   'Are you sure you want to delete this project?',
+                    //   () => {
+                    //     console.log('onOk');
+                    //     deleteData(`projects/${item.id}`)
+                    //     .then(res=>{
+                    //       console.log('ProjectDelete-Res', res);
+                    //       if(res?.response?.status === 500){
+                    //         openNotification('Error', 'This Project can not be deleted as it contains Tasks.')
+                    //       } else {
+                    //         getProjectsApi();
+                    //       }
+                    //     })
+                    //     .catch(e=>console.log('ProjectDelete-Error', e))
+                    //   },
+                    //   () => {},
+                    //   'Yes',
+                    //   'No'
+                    // )}
                     onDuplicate={()=>optionsModal(
                       'Confirmation',
                       'This action will a copy of this project. Do you want to procees?',
