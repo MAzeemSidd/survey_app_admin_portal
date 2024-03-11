@@ -16,11 +16,13 @@ export default function Login() {
         username: values.username,
         password: values.password,
       });
-      const token = response.data.token;
+      const {token,user} = response.data;
       localStorage.setItem("jwtToken", token);
-      navigate('/home', { replace });
+      localStorage.setItem("user",user);
+      navigate('/home', { replace:true });
     } catch (error) {
       console.log("Invalid Username and Password!");
+      setError("Invalid username or password. Please try again.");
     }
   };
 
@@ -35,10 +37,10 @@ export default function Login() {
         justifyContent: "center",
         alignItems: "center",
         height: "100vh",
-        backgroundColor: "#f0f2f5", // Change this to your preferred color
-        border: "1px solid #ccc", // Border style for the outer container
-        borderRadius: "8px", // Border radius for the outer container
-        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)", // Optional box shadow
+        backgroundColor: "#f0f2f5",
+        border: "1px solid #ccc",
+        borderRadius: "8px",
+        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
       }}
     >
       <Form
@@ -52,9 +54,9 @@ export default function Login() {
         style={{
           maxWidth: 500,
           width: "100%",
-          border: "1px solid #ccc", // Border style for the form
-          borderRadius: "8px", // Border radius for the form
-          padding: "20px", // Optional padding for the form
+          border: "1px solid #ccc",
+          borderRadius: "8px",
+          padding: "20px",
         }}
         initialValues={{
           remember: true,

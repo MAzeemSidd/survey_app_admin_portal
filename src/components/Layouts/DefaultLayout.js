@@ -9,7 +9,7 @@ import {
   UnorderedListOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { Breadcrumb, Button, Layout, Menu, Spin, theme } from 'antd';
+import { Avatar, Breadcrumb, Button, Dropdown, Layout, Menu, Spin, theme } from 'antd';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import routes from '../../routes';
 
@@ -97,13 +97,40 @@ const items = [
 
 const App = () => {
   const [collapsed, setCollapsed] = useState(false);
-
+  const navigate = useNavigate();
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const navigate = useNavigate();
-
+  // const handleLogout = () => {
+  //   try {
+  //     console.log("Logging out...");
+  //     localStorage.clear();
+  //     navigate("/", { replace: true });
+  //   } catch (error) {
+  //     console.error("Error during logout:", error);
+  //   }
+  // };
+  const handleLogout = () => {
+    console.log('log out...');
+    localStorage.clear();
+    
+    // Open the login page in a new tab
+    window.open('/', '_blank');
+  
+    // Close the current tab
+    window.close();
+  };
+  
+  const menu = (
+    <Menu>
+      <Menu.Item key="profile">Profile</Menu.Item>
+      <Menu.Item key="settings">Settings</Menu.Item>
+      <Menu.Item key="logout" onClick={handleLogout}>
+        Logout
+      </Menu.Item>
+    </Menu>
+  );
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider trigger={null} collapsible collapsed={collapsed}>
@@ -125,7 +152,7 @@ const App = () => {
         </Menu>
       </Sider>
       <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }}>
+        <Header style={{ padding: 10, background: colorBgContainer, display:'flex', justifyContent:"space-between" }}>
           <Button
             type="text"
             size="large"
@@ -133,6 +160,17 @@ const App = () => {
           >
             <UnorderedListOutlined style={{ fontSize: 20 }} />
           </Button>
+          <Dropdown overlay={menu} placement="bottomRight" arrow trigger={['click']}>
+            <Button type="text" size="large">
+              <Avatar
+                style={{
+                  backgroundColor: '#aaa',
+                }}
+                icon={<UserOutlined />}
+                size="small"
+              />
+            </Button>
+          </Dropdown>
         </Header>
         <Content style={{margin: '0 16px'}}>
           {/* <Breadcrumb style={{margin: '16px 0'}}>
