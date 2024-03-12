@@ -34,7 +34,10 @@ const Projects = () => {
   return (
     <div>
       <MainDrawer open={drawerVisibility} formType='Add' title='Project'
-        onClose={()=>setDrawerVisibility(false)}
+        onClose={(resetFields)=>{
+          resetFields()
+          setDrawerVisibility(false)
+        }}
         submitFunction={(fields, resetFields)=>{
           postData('projects', JSON.stringify(fields))
           .then(res=>{

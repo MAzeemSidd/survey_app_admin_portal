@@ -44,7 +44,11 @@ const ProjectDetails = (props) => {
 
   return (
     <div>
-      <MainDrawer open={drawerVisibility} onClose={()=>setDrawerVisibility(false)} title='Task' formType='Add'
+      <MainDrawer open={drawerVisibility} title='Task' formType='Add'
+        onClose={(resetFields)=>{
+          resetFields()
+          setDrawerVisibility(false)
+        }}
         submitFunction={(fields, resetFields)=>{
           postData(`projects/${projectId}/tasks`, JSON.stringify(fields))
           .then(res=>{
