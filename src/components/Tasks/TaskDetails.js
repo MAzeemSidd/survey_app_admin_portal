@@ -30,6 +30,7 @@ const TaskDetails = () => {
       console.log('tasks-error', e)
     })
   }
+  console.log('SUBTASKS&QUESTIONS', subTasks, questions)
 
   const getQuestionsOfSubtasks = (_projectId, _taskId, _subTaskId) => {
     console.log('getSUbTasksandQuestions', _projectId, taskId)
@@ -43,10 +44,10 @@ const TaskDetails = () => {
     })
   }
 
-  const getQuestions = () => {
-    getData(`projects/${projectId}/tasks/${taskId}/questions`)
-    .then(res=>{console.log('question-res'); setQuestions(res?.data?.data);}).catch(e=>console.log('Question-Error'))
-  } 
+  // const getQuestions = () => {
+  //   getData(`projects/${projectId}/tasks/${taskId}/questions`)
+  //   .then(res=>{console.log('question-res'); setQuestions(res?.data?.data);}).catch(e=>console.log('Question-Error'))
+  // } 
 
   useEffect(()=>{
     if(projectId && taskId) {
@@ -61,6 +62,7 @@ const TaskDetails = () => {
   console.log('Location.path',location.pathname)
   console.log('Location.state',location.state)
   useEffect(()=>{
+    console.log('UseEffect---------')
     if(location.pathname){
       const _route = location.pathname.split('/');
       var _projectId, _taskId, _subTaskId;
@@ -111,9 +113,16 @@ const TaskDetails = () => {
         .catch(e=>console.log('taskAdd-error',e))
       }}
     />
-    <MainDrawer open={questionForm} onClose={()=>setQuestionForm(false)} title='Question' formType='Add'
+    <MainDrawer open={questionForm} title='Question' formType='Add'
+      onClose={(resetFields)=>{
+        resetFields();
+        setQuestionForm(false)
+      }}
       submitFunction={(fields, resetFields)=>{
-        postData(`projects/${projectId}/tasks/${taskId}/questions`, JSON.stringify(fields.items[0]))
+        let newFields = fields
+        fields.type == 'BINARY' ? newFields = {...fields, options: ["Yes", "No"]} : newFields = fields
+        console.log('newFields', newFields)
+        postData(`projects/${projectId}/tasks/${taskId}/questions`, JSON.stringify(newFields))
         .then(res=>{
           console.log('QuestionAdd-Res', res)
           resetFields()
@@ -126,7 +135,7 @@ const TaskDetails = () => {
     <Row gutter={[0,12]}>
       <Col span={24}>
         <Typography.Title level={3} style={{color: '#3C4B64'}}>
-          {subTasks?.length !== 0 ? 'Sub Tasks' : questions?.length != 0 ? 'Questions' : 'Task Detail'}
+          {subTaskId ? 'Questions' : (subTasks?.length !== 0 ? 'Sub Tasks' : questions?.length != 0 ? 'Questions' : 'Task Detail')}
         </Typography.Title>
       </Col>
       <Col span={24}>

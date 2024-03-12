@@ -121,6 +121,7 @@ const SubTaskForm = ({data}) => {
 }
 
 const QuestionForm = ({formType, data}) => {
+  const [selectedType, setSelectedType] = useState(null)
   console.log('Data in QuestionForm', data, formType)
   const options = [
     {value: 'NUMBER', label: 'NUMBER'},
@@ -138,32 +139,31 @@ const QuestionForm = ({formType, data}) => {
   return (
     <Row style={{marginBottom: 24}}>
       <Col span={24}>
-        {formType === 'Edit' && <>
-          {data && <Card size="small">
-            <Row>
-              <Col span={6}>
-                <Form.Item label="Type" name='type' initialValue={data.type}>
-                  <Select
-                    showSearch
-                    optionFilterProp="children"
-                    onChange={val=>console.log('onSelect', val)}
-                    filterOption={(input, option) => (option?.label ?? '').includes(input.toUpperCase())}
-                    options={options}
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row>
-              <Col span={24}>
-                <Form.Item label="Question" name='question' initialValue={data.question}>
-                  <Input placeholder="Write a question you want to add" />
-                </Form.Item>
-              </Col>
-            </Row>
-          </Card>}
-        </>}
+        <Card size="small">
+          <Row>
+            <Col span={6}>
+              <Form.Item label="Type" name='type' initialValue={data?.type ?? null}>
+                <Select
+                  showSearch
+                  placeholder="Select a type"
+                  optionFilterProp="children"
+                  onChange={val=>console.log(val)}
+                  filterOption={(input, option) => (option?.label ?? '').includes(input.toUpperCase())}
+                  options={options}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={24}>
+              <Form.Item label="Question" name='question' initialValue={data?.question ?? null}>
+                <Input placeholder="Write a question you want to add" />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Card>
           
-          {formType === 'Add' &&
+          {/* {formType === 'Add' &&
             <Form.List name="items">
               {(fields, { add, remove }) => (
                 <div
@@ -214,7 +214,7 @@ const QuestionForm = ({formType, data}) => {
                 </div>
               )}
             </Form.List>
-          }
+          } */}
       </Col>
     </Row>
   );

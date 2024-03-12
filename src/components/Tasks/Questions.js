@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Card, Col, Collapse, Row, Skeleton, Tag, Typography } from 'antd'
-import { DeleteOutlined, DiffOutlined, EditOutlined } from '@ant-design/icons'
+import { CopyOutlined, DeleteOutlined, DiffOutlined, EditOutlined } from '@ant-design/icons'
 import MainDrawer from '../MainDrawer'
-import { getData, postData, putData } from '../../Services/NetworkService'
+import { deleteData, getData, postData, putData } from '../../Services/NetworkService'
+import { optionsModal } from '../../functions/optionsModal'
 
-const TaskCollapse = ({item, projectId, handleEditBtnClick, handleDeleteBtnClick}) => {
+const TaskCollapse = ({item, projectId, handleEditBtnClick, handleDeleteBtnClick, handleDuplicateBtnClick}) => {
   const [isOpen, setIsOpen] = useState(false)
   const [answer, setAnswer] = useState(null)
 
@@ -50,6 +51,7 @@ const TaskCollapse = ({item, projectId, handleEditBtnClick, handleDeleteBtnClick
             <Row gutter={6}>
               <Col><Button type='text' size='small' onClick={e=>handleEditBtnClick(e, item)}><EditOutlined /></Button></Col>
               <Col><Button type='text' size='small' onClick={e=>handleDeleteBtnClick(e, item)}><DeleteOutlined /></Button></Col>
+              <Col><Button type='text' size='small' onClick={e=>handleDuplicateBtnClick(e, item)}><CopyOutlined /></Button></Col>
             </Row>
           )
         },
@@ -78,11 +80,34 @@ const Questions = ({questions, projectId, taskId, getSubTasksandQuestions}) => {
   }
   const handleDeleteBtnClick = (e, item) => {
     e.stopPropagation();
+    optionsModal(
+      'Confirmation',
+      'Are you sure you want to delete this Question?',
+      () => {
+        console.log('onOk');
+        deleteData(`questions/${item.id}`)
+        .then(res=>{
+          console.log('QuestionDelete-Res', res);
+          getSubTasksandQuestions();
+        })
+        .catch(e=>console.log('SubTaskDelete-Error', e))
+      },
+      () => {},
+      'Yes',
+      'No'
+    )
   }
   return (<>
-    <MainDrawer open={addFormVisibility} onClose={()=>setAddFormVisibility(false)} title='Question' formType='Add'
+    <MainDrawer open={addFormVisibility} title='Question' formType='Add'
+    onClose={(resetFields)=>{
+      resetFields();
+      setAddFormVisibility(false)
+    }}
       submitFunction={(fields, resetFields)=>{
-        postData(`projects/${projectId}/tasks/${taskId}/questions`, JSON.stringify(fields.items[0]))
+        let newFields = fields
+        fields.type == 'BINARY' ? newFields = {...fields, options: ["Yes", "No"]} : newFields = fields
+        console.log('newFields', newFields)
+        postData(`projects/${projectId}/tasks/${taskId}/questions`, JSON.stringify(newFields))
         .then(res=>{
           console.log('QuestionAdd-Res', res)
           resetFields()
@@ -98,7 +123,10 @@ const Questions = ({questions, projectId, taskId, getSubTasksandQuestions}) => {
         setEditForm(prev=>({...prev, visibility: false, data: null}))
       }}
       submitFunction={(fields, resetFields)=>{
-        putData(`projects/${projectId}/tasks/${taskId}/questions/${editForm?.data?.id}`, JSON.stringify({...editForm?.data, ...fields}))
+        let newFields = fields
+        fields.type == 'BINARY' ? newFields = {...fields, options: ["Yes", "No"]} : newFields = fields
+        console.log('newFields', newFields)
+        putData(`projects/${projectId}/tasks/${taskId}/questions/${editForm?.data?.id}`, JSON.stringify({...editForm?.data, ...newFields}))
         .then(res=>{
           console.log('QuestionAdd-Res', res)
           resetFields()
