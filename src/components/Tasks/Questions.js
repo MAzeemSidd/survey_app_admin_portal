@@ -5,7 +5,7 @@ import MainDrawer from '../MainDrawer'
 import { deleteData, getData, postData, putData } from '../../Services/NetworkService'
 import { optionsModal } from '../../functions/optionsModal'
 
-const TaskCollapse = ({item, projectId, handleEditBtnClick, handleDeleteBtnClick, handleDuplicateBtnClick}) => {
+const TaskCollapse = ({item, projectId, handleEditBtnClick, handleDeleteBtnClick, /*handleDuplicateBtnClick*/}) => {
   const [isOpen, setIsOpen] = useState(false)
   const [answer, setAnswer] = useState(null)
 
@@ -13,7 +13,8 @@ const TaskCollapse = ({item, projectId, handleEditBtnClick, handleDeleteBtnClick
     if(isOpen) {
       console.log('UseEffect--TaskCollapse')
       getData(`projects/${projectId}/questions/${item.id}/answers`)
-      .then(res=>{console.log(res?.data?.data[0]); setAnswer(res?.data?.data[0].answer)}).catch(e=>{console.log(e)})
+      .then(res=>{console.log(res?.data?.data[0]); setAnswer(res?.data?.data[0]?.answer);})
+      .catch(e=>{console.log(e);})
     }
   },[isOpen])
 
@@ -42,16 +43,16 @@ const TaskCollapse = ({item, projectId, handleEditBtnClick, handleDeleteBtnClick
                     <Typography.Text style={{width: 500}}>{answer}</Typography.Text>
                   </Card>
                   :
-                  <Skeleton.Input active={true} size='small' block={true} />
-                }  
+                  <Typography.Text style={{width: 500, color: '#aaa', fontSize: 10}}>--No Answer--</Typography.Text>
+                }
               </Col>
             </Row>
           ),
           extra: (
-            <Row gutter={6}>
+            <Row gutter={3}>
               <Col><Button type='text' size='small' onClick={e=>handleEditBtnClick(e, item)}><EditOutlined /></Button></Col>
               <Col><Button type='text' size='small' onClick={e=>handleDeleteBtnClick(e, item)}><DeleteOutlined /></Button></Col>
-              <Col><Button type='text' size='small' onClick={e=>handleDuplicateBtnClick(e, item)}><CopyOutlined /></Button></Col>
+              {/* <Col><Button type='text' size='small' onClick={e=>handleDuplicateBtnClick(e, item)}><CopyOutlined /></Button></Col> */}
             </Row>
           )
         },
@@ -99,14 +100,18 @@ const Questions = ({questions, projectId, taskId, getSubTasksandQuestions}) => {
   }
   return (<>
     <MainDrawer open={addFormVisibility} title='Question' formType='Add'
-    onClose={(resetFields)=>{
-      resetFields();
-      setAddFormVisibility(false)
-    }}
+      onClose={(resetFields)=>{
+        resetFields();
+        setAddFormVisibility(false)
+      }}
       submitFunction={(fields, resetFields)=>{
+        const options = fields?.options?.map(field => field);
         let newFields = fields
-        fields.type == 'BINARY' ? newFields = {...fields, options: ["Yes", "No"]} : newFields = fields
-        console.log('newFields', newFields)
+        newFields = fields.type == 'BINARY' ? 
+        {...fields, options: [{name: "Yes"}, {name: "No"}]} 
+        : 
+        fields.type == 'MULTIPLE' ? {type: fields.type, question: fields.question, options: options} : fields
+        console.log('newFields', newFields) 
         postData(`projects/${projectId}/tasks/${taskId}/questions`, JSON.stringify(newFields))
         .then(res=>{
           console.log('QuestionAdd-Res', res)
@@ -124,7 +129,7 @@ const Questions = ({questions, projectId, taskId, getSubTasksandQuestions}) => {
       }}
       submitFunction={(fields, resetFields)=>{
         let newFields = fields
-        fields.type == 'BINARY' ? newFields = {...fields, options: ["Yes", "No"]} : newFields = fields
+        fields.type == 'BINARY' ? newFields = {...fields, options: [{name: "Yes"}, {name: "No"}]} : newFields = fields
         console.log('newFields', newFields)
         putData(`projects/${projectId}/tasks/${taskId}/questions/${editForm?.data?.id}`, JSON.stringify({...editForm?.data, ...newFields}))
         .then(res=>{

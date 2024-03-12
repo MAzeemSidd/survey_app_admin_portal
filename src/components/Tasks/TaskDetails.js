@@ -119,9 +119,13 @@ const TaskDetails = () => {
         setQuestionForm(false)
       }}
       submitFunction={(fields, resetFields)=>{
+        const options = fields?.options?.map(field => field);
         let newFields = fields
-        fields.type == 'BINARY' ? newFields = {...fields, options: ["Yes", "No"]} : newFields = fields
-        console.log('newFields', newFields)
+        newFields = fields.type == 'BINARY' ? 
+        {...fields, options: [{name: "Yes"}, {name: "No"}]} 
+        : 
+        fields.type == 'MULTIPLE' ? {type: fields.type, question: fields.question, options: options} : fields
+        console.log('newFields', newFields) 
         postData(`projects/${projectId}/tasks/${taskId}/questions`, JSON.stringify(newFields))
         .then(res=>{
           console.log('QuestionAdd-Res', res)

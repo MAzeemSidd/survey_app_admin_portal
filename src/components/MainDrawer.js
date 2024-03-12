@@ -147,7 +147,7 @@ const QuestionForm = ({formType, data}) => {
                   showSearch
                   placeholder="Select a type"
                   optionFilterProp="children"
-                  onChange={val=>console.log(val)}
+                  onChange={val=>setSelectedType(val)}
                   filterOption={(input, option) => (option?.label ?? '').includes(input.toUpperCase())}
                   options={options}
                 />
@@ -161,6 +161,32 @@ const QuestionForm = ({formType, data}) => {
               </Form.Item>
             </Col>
           </Row>
+          {selectedType === 'MULTIPLE' &&
+            <Row>
+              <Form.List name='options'>
+                {(subFields, subOpt) => (
+                  <Col span={24}>
+                    {subFields.map((subField) => (
+                      // <Space key={subField.key}>
+                      <Row key={subField.key}>
+                        <Col span={18}>
+                          <Form.Item noStyle name={[subField.name, 'name']}>
+                            <Input placeholder="Write Something" />
+                          </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                          <CloseOutlined onClick={() => {subOpt.remove(subField.name);}}/>
+                        </Col>
+                      </Row>
+                      // </Space>
+                    ))}
+                    <Button type="dashed" onClick={() => subOpt.add()} block>
+                      + Add Sub Item
+                    </Button>
+                  </Col>
+                )}
+              </Form.List>
+          </Row>}
         </Card>
           
           {/* {formType === 'Add' &&
