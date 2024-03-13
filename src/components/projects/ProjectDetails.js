@@ -44,7 +44,7 @@ const ProjectDetails = (props) => {
 
   return (
     <div>
-      <MainDrawer open={drawerVisibility} title='Task' formType='Add'
+      <MainDrawer open={drawerVisibility} title='Survey' formType='Add'
         onClose={(resetFields)=>{
           resetFields()
           setDrawerVisibility(false)
@@ -65,7 +65,7 @@ const ProjectDetails = (props) => {
           .catch(e=>console.log('taskAdd-error',e))
         }}
       />
-      {editForm.data && <MainDrawer open={editForm.visibility} data={editForm.data} title='Task' formType='Edit'
+      {editForm.data && <MainDrawer open={editForm.visibility} data={editForm.data} title='Survey' formType='Edit'
         onClose={(resetFields)=>{
           resetFields();
           setEditForm(prev=>({...prev, visibility: false, data: null}));
@@ -87,13 +87,13 @@ const ProjectDetails = (props) => {
         }}
       />}
       <Row gutter={[0,24]} style={{marginTop: 30, marginBottom: 15}}>
-        <Col span={24}><Typography.Title level={3} style={{color: '#3C4B64',margin: 0}}>Tasks</Typography.Title></Col>
-        <Col span={24}><Button icon={<AppstoreAddOutlined />} onClick={()=>setDrawerVisibility(true)}>Add Tasks</Button></Col>
+        <Col span={24}><Typography.Title level={3} style={{color: '#3C4B64',margin: 0}}>Surveys</Typography.Title></Col>
+        <Col span={24}><Button icon={<AppstoreAddOutlined />} onClick={()=>setDrawerVisibility(true)}>Add Survey</Button></Col>
       </Row>
       <Row gutter={[24,24]}>
         {tasks?.map((item, index) => (
           <Col key={index} span={8}>
-            <Card size='small' style={{border: '.5px solid #e0e0e0', height: 110}} hoverable onClick={()=>navigate(`/project/${projectId}/task/${item.id}`/*, {state: {subTasks: item.subTasks, questions: item.questions}}*/)}>
+            <Card size='small' style={{border: '.5px solid #e0e0e0', height: 110}} hoverable onClick={()=>navigate(`/client/${projectId}/survey/${item.id}`/*, {state: {subTasks: item.subTasks, questions: item.questions}}*/)}>
               <Row>
                 <Col span={22}>
                   <Typography.Text ellipsis={true} style={{fontSize: 16, fontWeight: 500, color: '#3C4B64'}}>{item.name}</Typography.Text>
@@ -115,14 +115,14 @@ const ProjectDetails = (props) => {
                     onEdit={()=>setEditForm(prev=>({...prev, visibility: true, data: item}))}
                     onDelete={()=>optionsModal(
                       'Confirmation',
-                      'Are you sure you want to delete this Task?',
+                      'Are you sure you want to delete this Survey?',
                       () => {
                         console.log('onOk');
                         deleteData(`tasks/${item.id}`)
                         .then(res=>{
                           console.log('TaskDelete-Res', res);
                           if(res?.response?.status === 500){
-                            openNotification('Error', 'This Task can not be deleted as it contains Subtasks/Questions.')
+                            openNotification('Error', 'This Survey can not be deleted as it contains Employees.')
                           } else {
                             getTasks(projectId);
                           }
@@ -135,7 +135,7 @@ const ProjectDetails = (props) => {
                     )}
                     onDuplicate={()=>optionsModal(
                       'Confirmation',
-                      'This action will a copy of this project. Do you want to procees?',
+                      'Do you want to duplicate this entry?',
                       () => {
                         console.log('onOk');
                         postData('duplicate', JSON.stringify({taskId: item.id, projectId: projectId}))

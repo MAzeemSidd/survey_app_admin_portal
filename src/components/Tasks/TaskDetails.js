@@ -66,7 +66,7 @@ const TaskDetails = () => {
     if(location.pathname){
       const _route = location.pathname.split('/');
       var _projectId, _taskId, _subTaskId;
-      if(_route[_route.length - 2] !== 'subtask') {
+      if(_route[_route.length - 2] !== 'employee') {
         _projectId = parseInt(_route[_route.length - 3])
         _taskId = parseInt(_route[_route.length - 1])
         _subTaskId = null
@@ -101,7 +101,7 @@ const TaskDetails = () => {
   // },[location?.state?.subTasks, location?.state?.questions])
 
   return (<>
-    <MainDrawer open={subTaskForm} onClose={()=>setSubTaskForm(false)} title='Sub-Task' formType='Add'
+    {/* <MainDrawer open={subTaskForm} onClose={()=>setSubTaskForm(false)} title='Sub-Task' formType='Add'
       submitFunction={(fields, resetFields)=>{
         postData(`projects/${projectId}/tasks/${taskId}/subtasks`, JSON.stringify(fields))
         .then(res=>{
@@ -135,11 +135,11 @@ const TaskDetails = () => {
         })
         .catch(e=>console.log('QuestionAdd-Error', e))
       }}
-    />
+    /> */}
     <Row gutter={[0,12]}>
       <Col span={24}>
         <Typography.Title level={3} style={{color: '#3C4B64'}}>
-          {subTaskId ? 'Questions' : (subTasks?.length !== 0 ? 'Sub Tasks' : questions?.length != 0 ? 'Questions' : 'Task Detail')}
+          {subTaskId ? 'Questions' : 'Employees' /*(subTasks?.length !== 0 ? 'Sub Tasks' : questions?.length != 0 ? 'Questions' : 'Task Detail')*/}
         </Typography.Title>
       </Col>
       <Col span={24}>
@@ -163,20 +163,20 @@ const TaskDetails = () => {
             subTaskId ?
             <Questions questions={questions} projectId={projectId} taskId={subTaskId} getSubTasksandQuestions={()=>getQuestionsOfSubtasks(projectId, taskId, subTaskId)} />
             :
-            (
-              subTasks?.length == 0 && questions?.length == 0 ?
-              <Card size='small' type='inner' style={{minHeight: '63vh'}}>
-                <Row gutter={12} style={{margin: '15px 0'}}>
-                  <Col><Button icon={<AppstoreAddOutlined />} onClick={()=>setSubTaskForm(true)}>Add Sub-Tasks</Button></Col>
-                  <Col><Button icon={<DiffOutlined />} onClick={()=>setQuestionForm(true)}>Add Questions</Button></Col>
-                </Row>
-              </Card>
-              :
-              subTasks?.length != 0 ?
-                <SubTasks subTasks={subTasks} setOpen={()=>setSubTaskForm(true)} projectId={projectId} taskId={taskId} getSubTasksandQuestions={()=>getSubTasksandQuestions(projectId, taskId)} />
-                :
-                <Questions questions={questions} projectId={projectId} taskId={taskId} getSubTasksandQuestions={()=>getSubTasksandQuestions(projectId, taskId)} />
-            )  
+            <SubTasks subTasks={subTasks} setOpen={()=>setSubTaskForm(true)} projectId={projectId} taskId={taskId} getSubTasksandQuestions={()=>getSubTasksandQuestions(projectId, taskId)} />
+            // (
+            //   subTasks?.length == 0 && questions?.length == 0 ?
+            //   <Card size='small' type='inner' style={{minHeight: '63vh'}}>
+            //     <Row gutter={12} style={{margin: '15px 0'}}>
+            //       <Col><Button icon={<AppstoreAddOutlined />} onClick={()=>setSubTaskForm(true)}>Add Sub-Tasks</Button></Col>
+            //       <Col><Button icon={<DiffOutlined />} onClick={()=>setQuestionForm(true)}>Add Questions</Button></Col>
+            //     </Row>
+            //   </Card>
+            //   :
+            //   subTasks?.length != 0 ?
+            //     :
+            //     <Questions questions={questions} projectId={projectId} taskId={taskId} getSubTasksandQuestions={()=>getSubTasksandQuestions(projectId, taskId)} />
+            // )  
           }
           {/* <ConfigProvider
             theme={{
