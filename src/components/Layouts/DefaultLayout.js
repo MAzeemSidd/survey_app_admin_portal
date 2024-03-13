@@ -113,7 +113,7 @@ const App = () => {
   // };
   const handleLogout = () => {
     console.log('log out...');
-    localStorage.clear();
+    localStorage.removeItem("jwtToken");
     
     // Open the login page in a new tab
     window.open('/', '_blank');
@@ -124,8 +124,8 @@ const App = () => {
   
   const menu = (
     <Menu>
-      <Menu.Item key="profile">Profile</Menu.Item>
-      <Menu.Item key="settings">Settings</Menu.Item>
+      {/* <Menu.Item key="profile">Profile</Menu.Item>
+      <Menu.Item key="settings">Settings</Menu.Item> */}
       <Menu.Item key="logout" onClick={handleLogout}>
         Logout
       </Menu.Item>
