@@ -10,7 +10,7 @@ const ProjectForm = ({data}) => {
           rules={[
             {
               required: true,
-              message: `Name is required`,
+              message: 'Name is required',
             },
             {
               min: 5,
@@ -48,7 +48,7 @@ const TaskForm = ({data}) => {
           rules={[
             {
               required: true,
-              message: `Name is required`,
+              message: 'Name is required',
             },
             {
               min: 5,
@@ -64,8 +64,15 @@ const TaskForm = ({data}) => {
           <Input placeholder="Write description" />
         </Form.Item>
       </Col>
-      <Col span={6}>
-        <Form.Item label="Type" name='type' initialValue={data?.type ?? null}>
+      <Col span={8}>
+        <Form.Item label="Type" name='type' initialValue={data?.type ?? null} validateFirst
+          rules={[
+            {
+              required: true,
+              message: 'Type must be selected',
+            }
+          ]}
+        >
           <Select
             showSearch
             placeholder='Select a type'
@@ -76,8 +83,16 @@ const TaskForm = ({data}) => {
           />
         </Form.Item>
       </Col>
-      <Col span={6}>
-        <Form.Item label="Repeat Level" name='repeatLevel' initialValue={data?.repeatLevel ?? null}>
+      <Col span={8}>
+        <Form.Item label="Repeat Level" name='repeatLevel' initialValue={data?.repeatLevel ?? null}
+          validateFirst
+          rules={[
+            {
+              required: true,
+              message: 'Repeat level must be defined',
+            }
+          ]}
+        >
           <Select
             showSearch
             placeholder='Set repeat level'
@@ -92,33 +107,6 @@ const TaskForm = ({data}) => {
   </>)
 }
 
-const SubTaskForm = ({data}) => {
-  return(<>
-    <Row gutter={16}>
-      <Col span={12}>
-        <Form.Item name="name" label="Name" initialValue={data?.name ?? null} validateFirst
-          rules={[
-            {
-              required: true,
-              message: `Name is required`,
-            },
-            {
-              min: 5,
-              message: 'At least 5 characters must be used',
-            },
-          ]}
-        >
-          <Input placeholder="Enter name" />
-        </Form.Item>
-      </Col>
-      <Col span={12}>
-        <Form.Item name="description" label="Descrition" initialValue={data?.description ?? null}>
-          <Input placeholder="Write description" />
-        </Form.Item>
-      </Col>
-    </Row>
-  </>)
-}
 
 const QuestionForm = ({formType, data}) => {
   const [selectedType, setSelectedType] = useState(null)
@@ -142,7 +130,14 @@ const QuestionForm = ({formType, data}) => {
         <Card size="small">
           <Row>
             <Col span={6}>
-              <Form.Item label="Type" name='type' initialValue={data?.type ?? null}>
+              <Form.Item label="Type" name='type' initialValue={data?.type ?? null} validateFirst
+                rules={[
+                  {
+                    required: true,
+                    message: 'Type must be selected',
+                  }
+                ]}
+              >
                 <Select
                   showSearch
                   placeholder="Select a type"
@@ -156,7 +151,15 @@ const QuestionForm = ({formType, data}) => {
           </Row>
           <Row>
             <Col span={24}>
-              <Form.Item label="Question" name='question' initialValue={data?.question ?? null}>
+              <Form.Item label="Question" name='question' initialValue={data?.question ?? null}
+                validateFirst
+                rules={[
+                  {
+                    required: true,
+                    message: 'Question field must not be empty',
+                  }
+                ]}
+              >
                 <Input placeholder="Write a question you want to add" />
               </Form.Item>
             </Col>
@@ -188,67 +191,16 @@ const QuestionForm = ({formType, data}) => {
               </Form.List>
           </Row>}
         </Card>
-          
-          {/* {formType === 'Add' &&
-            <Form.List name="items">
-              {(fields, { add, remove }) => (
-                <div
-                  style={{
-                    display: 'flex',
-                    rowGap: 16,
-                    flexDirection: 'column',
-                  }}
-                >
-                  {fields.map((field) => (
-                    <Card
-                      size="small"
-                      title={`Question ${field.name + 1}`}
-                      key={field.key}
-                      extra={
-                        fields.length > 1 &&
-                        <CloseOutlined onClick={() => {
-                            remove(field.name);
-                            console.log(fields.length)
-                        }}/>
-                      }
-                    >
-                      <Row>
-                        <Col span={6}>
-                          <Form.Item label="Type" name={[field.name, 'type']}>
-                            <Select
-                              showSearch
-                              placeholder="Select a type"
-                              optionFilterProp="children"
-                              onChange={val=>console.log('onSelect', val)}
-                              filterOption={(input, option) => (option?.label ?? '').includes(input.toUpperCase())}
-                              options={options}
-                            />
-                          </Form.Item>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col span={24}>
-                          <Form.Item label="Question" name={[field.name, 'question']}>
-                            <Input placeholder="Write a question you want to add" />
-                          </Form.Item>
-                        </Col>
-                      </Row>
-                    </Card>
-                  ))}
-
-                  <Button type="dashed" icon={<PlusOutlined />} onClick={() => add()} block>Add more Questions</Button>
-                </div>
-              )}
-            </Form.List>
-          } */}
       </Col>
     </Row>
   );
 }
 
+
 const MainDrawer = ({open, data=null, onClose, title, formType, submitFunction=()=>{}}) => {
   const [form] = Form.useForm();
   console.log('Main-FormData', data)
+  
   const FormBody = useMemo(()=>{
     switch (title) {
       case 'Project':
@@ -282,13 +234,25 @@ const MainDrawer = ({open, data=null, onClose, title, formType, submitFunction=(
         initialValues={{
           items: [{}],
         }}
-        onFinish={(value)=>{
-          console.log(value)
-          submitFunction(value, ()=>form.resetFields());
+        onFinish={(fields)=>{
+          console.log(fields)
+          if(title == 'Question'){
+            const options = fields?.options?.map(field => field);
+            let newFields = fields.type == 'BINARY' ? 
+            {...fields, options: [{name: "Yes"}, {name: "No"}]} 
+            : 
+            fields.type == 'MULTIPLE' ? {type: fields.type, question: fields.question, options: options}
+            :
+            fields
+            submitFunction(newFields, ()=>form.resetFields());
+          }
+          else {
+            submitFunction(fields, ()=>form.resetFields());
+          }
         }}  
       >
         {FormBody}
-        <Row>
+        <Row style={{marginTop: 20}}>
           <Col><Button htmlType='submit'>Submit</Button></Col>
         </Row>
       </Form>

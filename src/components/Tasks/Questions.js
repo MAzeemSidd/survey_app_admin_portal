@@ -1,20 +1,33 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Card, Col, Collapse, Row, Skeleton, Tag, Typography } from 'antd'
+import { Button, Card, Col, Collapse, Row, Skeleton, Spin, Tag, Typography } from 'antd'
 import { CopyOutlined, DeleteOutlined, DiffOutlined, EditOutlined } from '@ant-design/icons'
 import MainDrawer from '../MainDrawer'
 import { deleteData, getData, postData, putData } from '../../Services/NetworkService'
 import { optionsModal } from '../../functions/optionsModal'
+import { type } from '@testing-library/user-event/dist/type'
 
 const TaskCollapse = ({item, projectId, handleEditBtnClick, handleDeleteBtnClick, /*handleDuplicateBtnClick*/}) => {
   const [isOpen, setIsOpen] = useState(false)
   const [answer, setAnswer] = useState(null)
+  const [loading, setLoading] = useState(false)
+
+  console.log('answer', answer)
 
   useEffect(()=>{
     if(isOpen) {
-      console.log('UseEffect--TaskCollapse')
+      console.log('UseEffect--TaskCollapse',item)
+      setLoading(true);
       getData(`projects/${projectId}/questions/${item.id}/answers`)
-      .then(res=>{console.log(res?.data?.data[0]); setAnswer(res?.data?.data[0]?.answer);})
-      .catch(e=>{console.log(e);})
+      .then(res=>{
+        console.log('Answer-Res',res?.data?.data);
+        if(item?.type == 'MULTIPLE') {
+          let options = res?.data?.data.length != 0 ? res?.data?.data?.map(item=>item.answer) : null
+          setAnswer(options)
+        }
+        else setAnswer(res?.data?.data[0]?.answer);
+        setLoading(false)
+      })
+      .catch(e=>{console.log(e); setLoading(false)})
     }
   },[isOpen])
 
@@ -33,17 +46,28 @@ const TaskCollapse = ({item, projectId, handleEditBtnClick, handleDeleteBtnClick
             </Row>
           ),
           children: (
-            <Row>
-              <Col span={24}>
-                <Typography.Text style={{width: 500}}>{item.question}</Typography.Text>
-              </Col>
+            <Row gutter={[0,12]}>
+              <Col span={24}><Typography.Text style={{color: '#808080', fontSize: 11}}>Answer</Typography.Text></Col>
               <Col>
-                {answer ?
-                  <Card size='small'>
-                    <Typography.Text style={{width: 500}}>{answer}</Typography.Text>
-                  </Card>
-                  :
-                  <Typography.Text style={{width: 500, color: '#aaa', fontSize: 10}}>--No Answer--</Typography.Text>
+                {
+                  <Spin spinning={loading}>
+                    {
+                      answer ?
+                        item?.type == 'MULTIPLE' ?
+                          answer?.map((item,i)=>(
+                            <Card size='small'>
+                              <Typography.Text style={{width: 500, marginLeft: 10}}>{item}</Typography.Text>
+                              {i !== answer.length-1 && ','}
+                            </Card>
+                          ))
+                          :
+                          <Card size='small'>
+                            <Typography.Text style={{width: 500}}>{answer}</Typography.Text>
+                          </Card>
+                        :
+                        <Typography.Text style={{width: 500, color: '#aaa', fontSize: 10}}>--No Answer--</Typography.Text>
+                    }
+                  </Spin>
                 }
               </Col>
             </Row>
@@ -72,6 +96,7 @@ const Questions = ({questions, projectId, taskId, getSubTasksandQuestions}) => {
     if(questions){
       setQuestions(questions)
     }
+    return () => setQuestions(null)
   },[questions])
 
   const handleEditBtnClick = (e, item) => {
@@ -105,14 +130,8 @@ const Questions = ({questions, projectId, taskId, getSubTasksandQuestions}) => {
         setAddFormVisibility(false)
       }}
       submitFunction={(fields, resetFields)=>{
-        const options = fields?.options?.map(field => field);
-        let newFields = fields
-        newFields = fields.type == 'BINARY' ? 
-        {...fields, options: [{name: "Yes"}, {name: "No"}]} 
-        : 
-        fields.type == 'MULTIPLE' ? {type: fields.type, question: fields.question, options: options} : fields
-        console.log('newFields', newFields) 
-        postData(`projects/${projectId}/tasks/${taskId}/questions`, JSON.stringify(newFields))
+        console.log('fields', fields) 
+        postData(`projects/${projectId}/tasks/${taskId}/questions`, JSON.stringify(fields))
         .then(res=>{
           console.log('QuestionAdd-Res', res)
           resetFields()
