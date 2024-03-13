@@ -1,24 +1,42 @@
 import React, { useState } from "react";
-import { Button, Checkbox, Form, Input } from "antd";
+import { Button, Checkbox, Form, Input, notification } from "antd";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { replace } from "formik";
 
 const url = process.env.REACT_APP_SERVER_URL + "login";
 
 export default function Login() {
   const navigate = useNavigate();
   const [error, setError] = useState("");
+  const [rememberMe,setRememberMe] = useState(false);
 
+  const handleCheckbox = (e) => {
+    setRememberMe(!rememberMe);
+    if(e.target.checked === false){
+      localStorage.removeItem("remember");
+      localStorage.removeItem("password");
+      localStorage.removeItem("username");
+    }
+  }
   const onFinish = async (values) => {
     try {
       const response = await axios.post(url, {
         username: values.username,
         password: values.password,
       });
-      const {token,user} = response.data;
+      console.log(values);
+      const {token} = response.data;
       localStorage.setItem("jwtToken", token);
-      localStorage.setItem("user",user);
+      if(rememberMe){
+        localStorage.setItem("remember",values.remember);
+        localStorage.setItem("username",values.username);
+        localStorage.setItem("password",values.password);
+      }
+      notification.success({
+        message: 'Login Success',
+        description: 'You have successfully logged in.',
+        placement:'top',
+      });
       navigate('/home', { replace:true });
     } catch (error) {
       console.log("Invalid Username and Password!");
@@ -59,7 +77,9 @@ export default function Login() {
           padding: "20px",
         }}
         initialValues={{
-          remember: true,
+          remember: localStorage.getItem("remember") === "true" ? true : false,
+          username:localStorage.getItem("username") || "",
+          password:localStorage.getItem("password") || "",
         }}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
@@ -76,7 +96,7 @@ export default function Login() {
             },
           ]}
         >
-          <Input />
+          <Input/>
         </Form.Item>
 
         <Form.Item
@@ -89,7 +109,7 @@ export default function Login() {
             },
           ]}
         >
-          <Input.Password />
+          <Input.Password/>
         </Form.Item>
 
         <Form.Item
@@ -100,7 +120,7 @@ export default function Login() {
             span: 16,
           }}
         >
-          <Checkbox>Remember me</Checkbox>
+          <Checkbox onChange={(e)=>handleCheckbox(e)}>Remember me</Checkbox>
         </Form.Item>
 
         <Form.Item
