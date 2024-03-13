@@ -147,10 +147,10 @@ const Questions = ({questions, projectId, taskId, getSubTasksandQuestions}) => {
         setEditForm(prev=>({...prev, visibility: false, data: null}))
       }}
       submitFunction={(fields, resetFields)=>{
-        let newFields = fields
-        fields.type == 'BINARY' ? newFields = {...fields, options: [{name: "Yes"}, {name: "No"}]} : newFields = fields
-        console.log('newFields', newFields)
-        putData(`projects/${projectId}/tasks/${taskId}/questions/${editForm?.data?.id}`, JSON.stringify({...editForm?.data, ...newFields}))
+        // let newFields = fields
+        // fields.type == 'BINARY' ? newFields = {...fields, options: [{name: "Yes"}, {name: "No"}]} : newFields = fields
+        // console.log('newFields', newFields)
+        putData(`projects/${projectId}/tasks/${taskId}/questions/${editForm?.data?.id}`, JSON.stringify({...editForm?.data, ...fields}))
         .then(res=>{
           console.log('QuestionAdd-Res', res)
           resetFields()
