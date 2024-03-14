@@ -114,11 +114,8 @@ const App = () => {
   const handleLogout = () => {
     console.log('log out...');
     localStorage.removeItem("jwtToken");
-    
-    // Open the login page in a new tab
     window.open('/', '_blank');
-  
-    // Close the current tab
+
     window.close();
   };
   

@@ -138,7 +138,7 @@ const ProjectDetails = (props) => {
                       'This action will a copy of this project. Do you want to procees?',
                       () => {
                         console.log('onOk');
-                        postData('duplicate', JSON.stringify({taskId: item.id, projectId: projectId}))
+                        postData('duplicate/task', JSON.stringify({taskId: item.id, projectId: projectId}))
                         .then(res=>{
                           console.log('Duplicate-Res', res)
                           getTasks(projectId);

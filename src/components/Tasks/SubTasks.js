@@ -15,10 +15,7 @@ const SubTasks = ({subTasks, projectId, taskId, getSubTasksandQuestions}) => {
   const [editForm, setEditForm] = useState({visibility: true, data: null})
   return (<>
     <MainDrawer open={drawerVisibility} title='Sub-Task' formType='Add'
-      onClose={(resetFields)=>{
-        resetFields()
-        setDrawerVisibility(false)
-      }}
+      onClose={()=>setDrawerVisibility(false)}
       submitFunction={(fields, resetFields)=>{
         postData(`projects/${projectId}/tasks/${taskId}/subtasks`, JSON.stringify(fields))
         .then(res=>{
