@@ -30,7 +30,7 @@ const ProjectForm = ({data}) => {
   </>)
 }
 
-const TaskForm = ({data}) => {
+const TaskForm = ({data, title}) => {
   const type = [
     {value: 'SURVEY', label: 'SURVEY'},
     {value: 'ATTENDANCE', label: 'ATTENDANCE'}
@@ -60,7 +60,7 @@ const TaskForm = ({data}) => {
         </Form.Item>
       </Col>
       <Col span={12}>
-        <Form.Item name="description" label="Descrition" initialValue={data?.description ?? null}>
+        <Form.Item name="description" label={title == 'Employee' ? "Designation" : "Description"} initialValue={data?.description ?? null}>
           <Input placeholder="Write description" />
         </Form.Item>
       </Col>
@@ -203,12 +203,12 @@ const MainDrawer = ({open, data=null, onClose, title, formType, submitFunction=(
   
   const FormBody = useMemo(()=>{
     switch (title) {
-      case 'Project':
+      case 'Client':
         return <ProjectForm data={data} />
-      case 'Task':
-        return <TaskForm data={data} />
-      case 'Sub-Task':
-        return <TaskForm data={data} />
+      case 'Survey':
+        return <TaskForm data={data} title={title} />
+      case 'Employee':
+        return <TaskForm data={data} title={title} />
       case 'Question':
         return <QuestionForm formType={formType} data={data} />
       default:

@@ -47,29 +47,35 @@ const TaskCollapse = ({item, projectId, handleEditBtnClick, handleDeleteBtnClick
           ),
           children: (
             <Row gutter={[0,12]}>
-              <Col span={24}><Typography.Text style={{color: '#808080', fontSize: 11}}>Answer</Typography.Text></Col>
-              <Col>
-                {
+              {answer && <Col span={24}><Typography.Text style={{color: '#808080', fontSize: 11}}>Answer</Typography.Text></Col>}
+              {
+                answer ? 
+                <Col>
                   <Spin spinning={loading}>
                     {
-                      answer ?
-                        item?.type == 'MULTIPLE' ?
-                          answer?.map((item,i)=>(
-                            <Card size='small'>
-                              <Typography.Text style={{width: 500, marginLeft: 10}}>{item}</Typography.Text>
-                              {i !== answer.length-1 && ','}
-                            </Card>
-                          ))
-                          :
+                      item?.type == 'MULTIPLE' ?
+                        answer?.map((item,i)=>(
                           <Card size='small'>
-                            <Typography.Text style={{width: 500}}>{answer}</Typography.Text>
+                            <Typography.Text style={{width: 500, marginLeft: 10}}>{item}</Typography.Text>
+                            {i !== answer.length-1 && ','}
                           </Card>
+                        ))
                         :
-                        <Typography.Text style={{width: 500, color: '#aaa', fontSize: 10}}>--No Answer--</Typography.Text>
+                        <Card size='small'>
+                          <Typography.Text style={{width: 500}}>{answer}</Typography.Text>
+                        </Card>
                     }
                   </Spin>
-                }
-              </Col>
+                </Col>
+                :
+                <Col span={24}>
+                  <Row justify='center'>
+                    <Col>
+                      <Typography.Text style={{width: 500, color: '#ccc', fontSize: 12, fontWeight: 500}}>--No Answer--</Typography.Text>
+                    </Col>
+                  </Row>
+                </Col>
+              }
             </Row>
           ),
           extra: (

@@ -30,7 +30,7 @@ const projects = [
 ]
 const items = [
   {key: '/home', label: 'Home', icon: <HomeOutlined />},
-  {key: '/projects', label: 'Projects', icon: <ProductOutlined />},
+  {key: '/clients', label: 'Clients', icon: <ProductOutlined />},
   {key: '/reports', label: 'Reports', icon: <DesktopOutlined />},
 ];
 // const App = () => {

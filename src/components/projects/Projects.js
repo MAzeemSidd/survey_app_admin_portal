@@ -21,9 +21,9 @@ const Projects = () => {
     getData('projects')
      .then((res) => {
         setProjectData(res?.data?.data)
-        console.log('project-res', res?.data?.data);
+        console.log('clients-res', res?.data?.data);
      }).catch(e=>{
-        console.log('project-error', e);
+        console.log('clients-error', e);
      })
   }
 
@@ -33,7 +33,7 @@ const Projects = () => {
 
   return (
     <div>
-      <MainDrawer open={drawerVisibility} formType='Add' title='Project'
+      <MainDrawer open={drawerVisibility} formType='Add' title='Client'
         onClose={(resetFields)=>{
           resetFields()
           setDrawerVisibility(false)
@@ -56,7 +56,7 @@ const Projects = () => {
         }}
       />
 
-      {editForm.data && <MainDrawer open={editForm.visibility} data={editForm.data} title='Project' formType='Edit'
+      {editForm.data && <MainDrawer open={editForm.visibility} data={editForm.data} title='Client' formType='Edit'
         onClose={(resetFields)=>{
           resetFields();
           setEditForm(prev=>({...prev, visibility: false, data: null}));
@@ -80,13 +80,13 @@ const Projects = () => {
       />}
 
       <Row gutter={[0,24]} style={{marginTop: 30, marginBottom: 20}}>
-        <Col span={24}><Typography.Title level={3} style={{color: '#3C4B64',margin: 0}}>Projects</Typography.Title></Col>
-        <Col span={24}><Button icon={<AppstoreAddOutlined />} onClick={()=>setDrawerVisibility(true)}>Add Project</Button></Col>
+        <Col span={24}><Typography.Title level={3} style={{color: '#3C4B64',margin: 0}}>Clients</Typography.Title></Col>
+        <Col span={24}><Button icon={<AppstoreAddOutlined />} onClick={()=>setDrawerVisibility(true)}>Add Client</Button></Col>
       </Row>
       <Row gutter={[12,12]}>
         {projectData?.map((item, index) => (
           <Col key={index} span={6}>
-            <Card size='small' style={{border: '.5px solid #e0e0e0', height: 110}} hoverable onClick={()=>navigate(`/project/${item.id}`)}>
+            <Card size='small' style={{border: '.5px solid #e0e0e0', height: 110}} hoverable onClick={()=>navigate(`/client/${item.id}`)}>
               <Row>
                 <Col span={22}>
                   <Typography.Text ellipsis={true} style={{fontSize: 16, fontWeight: 500, color: '#3C4B64'}}>{item.name}</Typography.Text>
@@ -96,14 +96,14 @@ const Projects = () => {
                     onEdit={()=>setEditForm(prev=>({...prev, visibility: true, data: item}))}
                     onDelete={()=>optionsModal(
                       'Confirmation',
-                      'Are you sure you want to delete this project?',
+                      'Are you sure you want to delete this Client?',
                       () => {
                         console.log('onOk');
                         deleteData(`projects/${item.id}`)
                         .then(res=>{
                           console.log('ProjectDelete-Res', res);
                           if(res?.response?.status === 500){
-                            openNotification('Error', 'This Project can not be deleted as it contains Tasks.')
+                            openNotification('Error', 'This Client can not be deleted as it contains Surveys.')
                           } else {
                             getProjectsApi();
                           }
@@ -116,7 +116,7 @@ const Projects = () => {
                     )}
                     onDuplicate={()=>optionsModal(
                       'Confirmation',
-                      'This action will a copy of this project. Do you want to procees?',
+                      'Do you want to duplicate this entry?',
                       () => {console.log('onOk');},
                       () => {console.log('onCencel');},
                       'Yes',
