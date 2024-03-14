@@ -1,5 +1,6 @@
 import React, { Suspense, useState } from 'react';
 import {
+  ContactsOutlined,
   DesktopOutlined,
   FileOutlined,
   HomeOutlined,
@@ -23,15 +24,11 @@ function getItem(label, key, icon, children) {
   };
 }
 
-const projects = [
-  {key: '1', label: 'Project 1'},
-  {key: '2', label: 'Project 2'},
-  {key: '3', label: 'Project 3'},
-]
 const items = [
   {key: '/home', label: 'Home', icon: <HomeOutlined />},
   {key: '/clients', label: 'Clients', icon: <ProductOutlined />},
-  {key: '/reports', label: 'Reports', icon: <DesktopOutlined />},
+  {key: '/answers', label: 'Answers', icon: <ContactsOutlined />},
+  {key: '/reports', label: 'Reports', icon: <PieChartOutlined />},
 ];
 // const App = () => {
 //   const [collapsed, setCollapsed] = useState(false);

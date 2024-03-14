@@ -14,18 +14,23 @@ const OptionsDropdown = ({onEdit, onDelete, onDuplicate}) => {
       //     {title}
       //   </Typography.Text>
       // </div>
-      <Button type='link' size='small' style={{color: color}}
-        icon={<Icon style={{color: color, size: 10, marginRight: 5}} />}
+      // <Button type='link' size='small' style={{color: color}}
+      //   icon={<Icon style={{color: color, size: 10, marginRight: 5}} />}
+      //   onClick={e=>{e.stopPropagation(); onClickFunc(); setOpen(false)}}>
+      //     {title}
+      // </Button>
+      <a target="_blank" style={{color: color}}
         onClick={e=>{e.stopPropagation(); onClickFunc(); setOpen(false)}}>
-          {title}
-      </Button>
+        <Icon style={{color: color, size: 10, marginRight: 5}} />
+        {title}
+      </a>
     )
 
     return(
       <Dropdown
         menu={{
           items: [
-            {key: 0, label: <Label title='Edit' Icon={EditOutlined} onClickFunc={onEdit} />},
+            {key: 0, label: <Label title='Edit' Icon={EditOutlined} onClickFunc={onEdit} />, onClick: (e)=>{console.log('item-onclick', e);}},
             {key: 1, label: <Label title='Delete' Icon={DeleteOutlined} onClickFunc={onDelete} color='#f00' />},
             {type: 'divider'},
             {key: 2, label: <Label title='Duplicate' Icon={CopyOutlined} onClickFunc={onDuplicate} />},

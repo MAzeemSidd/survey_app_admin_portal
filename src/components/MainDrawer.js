@@ -109,7 +109,7 @@ const TaskForm = ({data, title}) => {
 
 
 const QuestionForm = ({formType, data}) => {
-  const [selectedType, setSelectedType] = useState(null)
+  const [selectedType, setSelectedType] = useState(data?.type ?? null)
   console.log('Data in QuestionForm', data, formType)
   const options = [
     {value: 'NUMBER', label: 'NUMBER'},
@@ -166,22 +166,20 @@ const QuestionForm = ({formType, data}) => {
           </Row>
           {selectedType === 'MULTIPLE' &&
             <Row>
-              <Form.List name='options'>
+              <Form.List name='options' initialValue={data?.options ?? []}>
                 {(subFields, subOpt) => (
                   <Col span={24}>
-                    {subFields.map((subField) => (
-                      // <Space key={subField.key}>
-                      <Row key={subField.key}>
-                        <Col span={18}>
-                          <Form.Item noStyle name={[subField.name, 'name']}>
+                    {subFields.map((subField, index) => (
+                      <Row gutter={3} align='middle' key={subField.key}>
+                        <Col span={20}>
+                          <Form.Item name={[subField.name, 'name']} label={`Option: ${index+1}`} initialValue={data.options[index] ?? null}>
                             <Input placeholder="Write Something" />
                           </Form.Item>
                         </Col>
-                        <Col span={6}>
+                        <Col span={4}>
                           <CloseOutlined onClick={() => {subOpt.remove(subField.name);}}/>
                         </Col>
                       </Row>
-                      // </Space>
                     ))}
                     <Button type="dashed" onClick={() => subOpt.add()} block>
                       + Add Sub Item
@@ -199,8 +197,7 @@ const QuestionForm = ({formType, data}) => {
 
 const MainDrawer = ({open, data=null, onClose, title, formType, submitFunction=()=>{}}) => {
   const [form] = Form.useForm();
-  console.log('Main-FormData', data)
-  
+ 
   const FormBody = useMemo(()=>{
     switch (title) {
       case 'Client':
