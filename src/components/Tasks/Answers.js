@@ -28,27 +28,26 @@ const Answers = () => {
     </Row>
     <Row gutter={24}>
       <Col span={8}>
-        <Row>
-          <Col span={24}>
-            <Typography.Text>Employee List</Typography.Text>
-          </Col>
-          <Col span={24}>
-            <Select
-              showSearch
-              placeholder="Select an Employee"
-              optionFilterProp="children"
-              onChange={val=>console.log(val)}
-              filterOption={(input, option) => (option?.label.toUpperCase() ?? '').includes(input.toUpperCase())}
-              options={employees ?? []}
-            />
-          </Col>
-        </Row>
-      </Col>
-      <Col span={8}>
         <Form.Item label='Project' name='project'>
           <Select
             showSearch
             placeholder="Select an Project"
+            optionFilterProp="children"
+            onChange={val=>console.log(val)}
+            filterOption={(input, option) => (option?.label ?? '').includes(input.toUpperCase())}
+            options={[
+              {value: 'VIRTUOSOFT', label: 'VIRTUOSOFT'},
+              {value: '10 PEARLS', label: '10 PEARLS'},
+              {value: 'NETSOL', label: 'NETSOL'}
+            ]}
+          />
+        </Form.Item>
+      </Col>
+      <Col span={8}>
+        <Form.Item label='Employee' name='employee'>
+          <Select
+            showSearch
+            placeholder="Select an Employee"
             optionFilterProp="children"
             onChange={val=>console.log(val)}
             filterOption={(input, option) => (option?.label ?? '').includes(input.toUpperCase())}
