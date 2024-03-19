@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { AppstoreAddOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons'
+import { AppstoreAddOutlined, CaretRightOutlined, DeleteOutlined, DownloadOutlined, EditOutlined } from '@ant-design/icons'
 import { Button, Card, Col, Collapse, Form, Row, Select, Tag, Typography , Space, Table} from 'antd'
-import { getData } from '../../Services/NetworkService'
+import { getData } from '../Services/NetworkService'
 import { useLocation } from 'react-router-dom'
+import generatePDF, { Margin, Resolution } from 'react-to-pdf'
 
 const AnswerTable = () => {
   const columns = [
@@ -63,9 +64,36 @@ const AnswerTable = () => {
       answer: 'No, they are very selfish',
     },
   ];
-  return(
-    <Table pagination={false} columns={columns} dataSource={data} size='small' />
-  )
+
+  
+  const getTargetElement = () => document.getElementById("container");
+  const downloadPdf = () => generatePDF(getTargetElement, options);
+
+  const options = {
+    filename: "employee-responses.pdf",
+    method: "save",
+    resolution: Resolution.EXTREME,
+    canvas: {
+      mimeType: "image/jpeg",
+      qualityRatio: 1
+    },
+    page: {
+      margin: Margin.MEDIUM
+    },
+    overrides: {
+      pdf: {
+        compress: true
+      },
+      canvas: {
+        useCORS: true
+      }
+    }
+  }
+
+  return(<>
+    <Row justify='end' style={{marginBottom: 10}}><Col span={2}><Button icon={<DownloadOutlined />} type='primary' onClick={downloadPdf}>PDF</Button></Col></Row>
+    <Table id='container' pagination={false} columns={columns} dataSource={data} size='small' />
+  </>)
 }
 
 const Answers = () => {
@@ -101,7 +129,7 @@ const Answers = () => {
 
   return (<>
     <Row style={{marginTop: 30, marginBottom: 15}}>
-      <Col span={6}><Typography.Title level={3} style={{color: '#3C4B64',margin: 0}}>Answers</Typography.Title></Col>
+      <Col span={6}><Typography.Title level={3} style={{color: '#3C4B64',margin: 0}}>Responses</Typography.Title></Col>
     </Row>
 
     <Row gutter={24}>
@@ -136,82 +164,88 @@ const Answers = () => {
       </Col>
     </Row>
 
-    <Row gutter={[0,24]}>
+    <Row>
       <Col span={24}>
-        <Card type='inner'>
-          <Row>
-            <Col span={3}>Fullname:</Col>
-            <Col>Nayyar Abbas</Col>
-          </Row>
-          <Row>
-            <Col span={3}>Age:</Col>
-            <Col>24</Col>
-          </Row>
-          <Row>
-            <Col span={3}>Designation:</Col>
-            <Col>Java Backend Developer</Col>
-          </Row>
-          <Row>
-            <Col span={3}>Experience:</Col>
-            <Col>1+ year</Col>
-          </Row>
-        </Card>
-      </Col>
 
-      <Col span={24}>
-        <Card type='inner'>
-          <Row gutter={[0,24]}>
-            <Col span={24}>
-              <Typography.Title style={{fontSize: 18}}>Project Name</Typography.Title>
-            </Col>
+        <Row gutter={[0,24]}>
+          <Col span={24}>
+            <Card type='inner'>
+              <Row>
+                <Col span={3}>Fullname:</Col>
+                <Col>Nayyar Abbas</Col>
+              </Row>
+              <Row>
+                <Col span={3}>Age:</Col>
+                <Col>24</Col>
+              </Row>
+              <Row>
+                <Col span={3}>Designation:</Col>
+                <Col>Java Backend Developer</Col>
+              </Row>
+              <Row>
+                <Col span={3}>Experience:</Col>
+                <Col>1+ year</Col>
+              </Row>
+            </Card>
+          </Col>
 
-            <Col span={24}>
+          <Col span={24}>
+            <Card type='inner'>
               <Row gutter={[0,24]}>
                 <Col span={24}>
-                  <Card size='small' hoverable style={{border: '1px solid #e0e0e0'}}>
-                    <Collapse
-                      bordered={false}
-                      defaultActiveKey={['1']}
-                      expandIcon={()=><></>}
-                      // style={{
-                      //   background: token.colorBgContainer,
-                      // }}
-                      items={[
-                        {
-                          key: '1',
-                          label: <Typography.Title style={{margin: 0, padding: 0, fontSize: 16}}>Survey Name 1</Typography.Title>,
-                          children: <AnswerTable/>,
-                          style: {background: '#fff'},
-                        }
-                      ]}
-                    />
-                  </Card>
+                  <Typography.Title style={{fontSize: 18}}>Project Name</Typography.Title>
                 </Col>
 
                 <Col span={24}>
-                  <Card size='small' hoverable style={{border: '1px solid #e0e0e0'}}>
-                    <Collapse
-                      bordered={false}
-                      // defaultActiveKey={['1']}
-                      expandIcon={()=><></>}
-                      // style={{
-                      //   background: token.colorBgContainer,
-                      // }}
-                      items={[
-                        {
-                          key: '1',
-                          label: <Typography.Title level={5} style={{margin: 0, padding: 0, fontSize: 16}}>Survey Name 2</Typography.Title>,
-                          children: <AnswerTable/>,
-                          style: {background: '#fff'},
-                        }
-                      ]}
-                    />
-                  </Card>
+                  <Row gutter={[0,24]}>
+                    <Col span={24}>
+                      <Card size='small' hoverable style={{border: '1px solid #e0e0e0'}}>
+                        <Collapse
+                          bordered={false}
+                          defaultActiveKey={['1']}
+                          expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
+                          // style={{
+                          //   background: token.colorBgContainer,
+                          // }}
+                          items={[
+                            {
+                              key: '1',
+                              label: <Typography.Title style={{margin: 0, padding: 0, fontSize: 16}}>Survey Name 1</Typography.Title>,
+                              children: <AnswerTable />,
+                              style: {background: '#fff'},
+                            }
+                          ]}
+                        />
+                      </Card>
+                    </Col>
+
+                    <Col span={24}>
+                      <Card size='small' hoverable style={{border: '1px solid #e0e0e0'}}>
+                        <Collapse
+                          bordered={false}
+                          // defaultActiveKey={['1']}
+                          expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
+                          // style={{
+                          //   background: token.colorBgContainer,
+                          // }}
+                          items={[
+                            {
+                              key: '1',
+                              label: <Typography.Title level={5} style={{margin: 0, padding: 0, fontSize: 16}}>Survey Name 2</Typography.Title>,
+                              children: <AnswerTable/>,
+                              style: {background: '#fff'},
+                            }
+                          ]}
+                        />
+                      </Card>
+                    </Col>
+                  </Row>
                 </Col>
               </Row>
-            </Col>
-          </Row>
-        </Card>
+            </Card>
+          </Col>
+        </Row>
+
       </Col>
     </Row>
   </>)

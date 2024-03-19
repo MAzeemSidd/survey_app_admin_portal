@@ -20,20 +20,27 @@ const TaskDetails = () => {
   // const [title, setTitle] = useState(null);
 
   const getSubTasksandQuestions = (_projectId, _taskId) => {
-    console.log('getSUbTasksandQuestions', _projectId, taskId)
     getData(`projects/${_projectId}/tasks`).then(res=>{
       console.log('tasks-res-GET',res?.data?.data)
-      const { subTasks, questions } = res?.data?.data?.filter(task=>task.id == _taskId)[0]
-      setSubTasks(subTasks)
+      const { questions } = res?.data?.data?.filter(task=>task.id == _taskId)[0]
+      // setSubTasks(subTasks)
       setQuestions(questions)
     }).catch(e=>{
       console.log('tasks-error', e)
     })
   }
+  
+  const getSubTasks = (_taskId) => {
+    getData(`tasks/${_taskId}/subtasks`).then(res=>{
+      console.log('subtasks-res-GET',res?.data?.data?.content)
+      setSubTasks(res?.data?.data?.content)
+    }).catch(e=>{
+      console.log('subtasks-error', e)
+    })
+  }
   console.log('SUBTASKS&QUESTIONS', subTasks, questions)
 
   const getQuestionsOfSubtasks = (_projectId, _taskId, _subTaskId) => {
-    console.log('getSUbTasksandQuestions', _projectId, taskId)
     getData(`projects/${_projectId}/tasks`).then(res=>{
       console.log('tasks-res',res?.data?.data)
       const task = res?.data?.data?.filter(task=>task.id == _taskId)[0]
@@ -44,6 +51,15 @@ const TaskDetails = () => {
     })
   }
 
+  const getQuestions = (_projectId, _taskId) => {
+    getData(`projects/${_projectId}/tasks/${_taskId}/questions`)
+    .then(res=>{
+      console.log('Question-Res', res?.data?.data?.content)
+      setQuestions(res?.data?.data?.content)
+    })
+    .catch(e=>console.log('Question-Error', e))
+  }
+
   // const getQuestions = () => {
   //   getData(`projects/${projectId}/tasks/${taskId}/questions`)
   //   .then(res=>{console.log('question-res'); setQuestions(res?.data?.data);}).catch(e=>console.log('Question-Error'))
@@ -52,9 +68,11 @@ const TaskDetails = () => {
   useEffect(()=>{
     if(projectId && taskId) {
       if(!subTaskId) {
-        getSubTasksandQuestions(projectId, taskId)
+        // getSubTasksandQuestions(projectId, taskId)
+        getSubTasks(taskId)
       } else {
-        getQuestionsOfSubtasks(projectId, taskId, subTaskId)
+        // getQuestionsOfSubtasks(projectId, taskId, subTaskId)
+        getQuestions(projectId, taskId)
       }
     }
   },[projectId, taskId, subTaskId])
@@ -161,9 +179,9 @@ const TaskDetails = () => {
               } */}
           {
             subTaskId ?
-            <Questions questions={questions} projectId={projectId} taskId={subTaskId} getSubTasksandQuestions={()=>getQuestionsOfSubtasks(projectId, taskId, subTaskId)} />
+            <Questions questions={questions} projectId={projectId} taskId={subTaskId} getQuestions={()=>getQuestions(projectId, taskId, subTaskId)} />
             :
-            <SubTasks subTasks={subTasks} setOpen={()=>setSubTaskForm(true)} projectId={projectId} taskId={taskId} getSubTasksandQuestions={()=>getSubTasksandQuestions(projectId, taskId)} />
+            <SubTasks subTasks={subTasks} setOpen={()=>setSubTaskForm(true)} projectId={projectId} taskId={taskId} getSubTasks={()=>getSubTasks(taskId)} />
             // (
             //   subTasks?.length == 0 && questions?.length == 0 ?
             //   <Card size='small' type='inner' style={{minHeight: '63vh'}}>

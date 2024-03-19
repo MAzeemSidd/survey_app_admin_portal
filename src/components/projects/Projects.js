@@ -20,8 +20,8 @@ const Projects = () => {
   const getProjectsApi = () => {
     getData('projects')
      .then((res) => {
-        setProjectData(res?.data?.data)
-        console.log('clients-res', res?.data?.data);
+        setProjectData(res?.data?.data?.content)
+        console.log('clients-res', res?.data?.data?.content);
      }).catch(e=>{
         console.log('clients-error', e);
      })
@@ -38,21 +38,9 @@ const Projects = () => {
           resetFields()
           setDrawerVisibility(false)
         }}
-        submitFunction={(fields, resetFields)=>{
-          postData('projects', JSON.stringify(fields))
-          .then(res=>{
-            console.log('projectAdd-res', res)
-            getData('projects')
-            .then((res) => {
-                setProjectData(res?.data?.data)
-                console.log('project-res', res?.data?.data);
-            }).catch(e=>{
-                console.log('project-error', e);
-            })
-            resetFields()
-            setDrawerVisibility(false)
-          })
-          .catch(e=>console.log('projectAdd-error',e))
+        submitFunction={()=>{
+          getProjectsApi()
+          setDrawerVisibility(false)
         }}
       />
 
@@ -61,21 +49,9 @@ const Projects = () => {
           resetFields();
           setEditForm(prev=>({...prev, visibility: false, data: null}));
         }}
-        submitFunction={(fields, resetFields)=>{
-          putData(`projects/${editForm?.data?.id}`, JSON.stringify({...fields, id: editForm?.data?.id}))
-          .then(res=>{
-            console.log('projectAdd-res', res)
-            getData('projects')
-            .then((res) => {
-                setProjectData(res?.data?.data)
-                console.log('project-res', res?.data?.data);
-            }).catch(e=>{
-                console.log('project-error', e);
-            })
-            resetFields()
-            setEditForm(prev=>({...prev, visibility: false, data: null}));
-          })
-          .catch(e=>console.log('project-error',e))
+        submitFunction={()=>{
+          getProjectsApi()
+          setEditForm(prev=>({...prev, visibility: false, data: null}));
         }}
       />}
 

@@ -8,26 +8,21 @@ import OptionsDropdown from '../others/OptionsDropdown'
 import { optionsModal } from '../../functions/optionsModal'
 import { openNotification } from '../../functions/openNotification'
 
-const SubTasks = ({subTasks, projectId, taskId, getSubTasksandQuestions}) => {
+const SubTasks = ({subTasks, projectId, taskId, getSubTasks}) => {
   console.log('--------Sub Tasks--------')
   const navigate = useNavigate()
   const [drawerVisibility, setDrawerVisibility] = useState(false)
   const [editForm, setEditForm] = useState({visibility: true, data: null})
   return (<>
-    <MainDrawer open={drawerVisibility} title='Employee' formType='Add'
+    <MainDrawer open={drawerVisibility} projectId={projectId} taskId={taskId}
+      title='Employee' formType='Add'
       onClose={(resetFields)=>{
         resetFields()
         setDrawerVisibility(false)
       }}
-      submitFunction={(fields, resetFields)=>{
-        postData(`projects/${projectId}/tasks/${taskId}/subtasks`, JSON.stringify(fields))
-        .then(res=>{
-          console.log('SubtaskAdd-res', res)
-          getSubTasksandQuestions()
-          setDrawerVisibility(false)
-          resetFields()
-        })
-        .catch(e=>console.log('taskAdd-error',e))
+      submitFunction={()=>{
+        getSubTasks()
+        setDrawerVisibility(false)
       }}
     />
     {editForm.data && <MainDrawer open={editForm.visibility} data={editForm.data} title='Employee' formType='Edit'
@@ -35,15 +30,9 @@ const SubTasks = ({subTasks, projectId, taskId, getSubTasksandQuestions}) => {
           resetFields();
           setEditForm(prev=>({...prev, visibility: false, data: null}));
         }}
-        submitFunction={(fields, resetFields)=>{
-          putData(`projects/${projectId}/tasks/${editForm?.data?.id}`, JSON.stringify({...fields, id: editForm?.data?.id}))
-          .then(res=>{
-            console.log('SubtaskAdd-res', res)
-            getSubTasksandQuestions()
-            resetFields()
-            setEditForm(prev=>({...prev, visibility: false, data: null}));
-          })
-          .catch(e=>console.log('taskAdd-error',e))
+        submitFunction={()=>{
+          getSubTasks()
+          setEditForm(prev=>({...prev, visibility: false, data: null}));
         }}
       />}
     <Card size='small' type='inner' style={{minHeight: '63vh'}}>
@@ -66,13 +55,13 @@ const SubTasks = ({subTasks, projectId, taskId, getSubTasksandQuestions}) => {
                     'Are you sure you want to delete this Employee?',
                     () => {
                       console.log('onOk');
-                      deleteData(`tasks/${item.id}`)
+                      deleteData(`subtasks/${item.id}`)
                       .then(res=>{
                         console.log('SubTaskDelete-Res', res);
                         if(res?.response?.status === 500){
                           openNotification('Error', 'This Task can not be deleted as it contains Questions.')
                         } else {
-                          getSubTasksandQuestions();
+                          getSubTasks();
                         }
                       })
                       .catch(e=>console.log('SubTaskDelete-Error', e))
@@ -86,10 +75,10 @@ const SubTasks = ({subTasks, projectId, taskId, getSubTasksandQuestions}) => {
                     'Do you want to duplicate this entry?',
                     () => {
                       console.log('onOk');
-                      postData('duplicate', JSON.stringify({taskId: item.id, projectId: projectId}))
+                      postData(`subtasks/${item.id}/duplicate`)
                       .then(res=>{
                         console.log('Duplicate-Res', res)
-                        getSubTasksandQuestions();
+                        getSubTasks();
                       })
                       .catch(e=>console.log('Duplicate-Error', e))
                     },

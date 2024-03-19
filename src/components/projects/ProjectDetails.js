@@ -19,9 +19,8 @@ const ProjectDetails = (props) => {
   
   const getTasks = (_projectId) => {
     getData(`projects/${_projectId}/tasks`).then(res=>{
-      setTasks(res?.data?.data)
-      setProjectId(_projectId)
-      console.log('tasks-res',res?.data?.data)
+      setTasks(res?.data?.data?.content)
+      console.log('tasks-res',res?.data?.data?.content)
     }).catch(e=>{
       console.log('tasks-error', e)
     })
@@ -32,58 +31,31 @@ const ProjectDetails = (props) => {
     const _projectId = _route[_route.length - 1]
     console.log(_route)
     console.log('searchparams', _projectId)
-    // getData(`projects/${_projectId}/tasks`).then(res=>{
-    //   setTasks(res?.data?.data)
-    //   setProjectId(_projectId)
-    //   console.log('tasks-res',res?.data?.data)
-    // }).catch(e=>{
-    //   console.log('tasks-error', e)
-    // })
     getTasks(_projectId)
+    setProjectId(_projectId)
   },[])
 
   return (
     <div>
-      <MainDrawer open={drawerVisibility} title='Survey' formType='Add'
+      <MainDrawer open={drawerVisibility} projectId={projectId} title='Survey' formType='Add'
         onClose={(resetFields)=>{
           resetFields()
           setDrawerVisibility(false)
         }}
-        submitFunction={(fields, resetFields)=>{
-          postData(`projects/${projectId}/tasks`, JSON.stringify(fields))
-          .then(res=>{
-            console.log('taskAdd-res', res)
-            getData(`projects/${projectId}/tasks`).then(res=>{
-              setTasks(res?.data?.data)
-              console.log('tasks-res',res?.data?.data)
-            }).catch(e=>{
-              console.log('tasks-error', e)
-            })
-            resetFields()
-            setDrawerVisibility(false)
-          })
-          .catch(e=>console.log('taskAdd-error',e))
+        submitFunction={()=>{
+          getTasks(projectId)
+          setDrawerVisibility(false)
         }}
       />
-      {editForm.data && <MainDrawer open={editForm.visibility} data={editForm.data} title='Survey' formType='Edit'
+      {editForm.data && <MainDrawer open={editForm.visibility} data={editForm.data} projectId={projectId}
+        title='Survey' formType='Edit'
         onClose={(resetFields)=>{
           resetFields();
           setEditForm(prev=>({...prev, visibility: false, data: null}));
         }}
-        submitFunction={(fields, resetFields)=>{
-          putData(`projects/${projectId}/tasks/${editForm?.data?.id}`, JSON.stringify({...fields, id: editForm?.data?.id}))
-          .then(res=>{
-            console.log('taskAdd-res', res)
-            getData(`projects/${projectId}/tasks`).then(res=>{
-              setTasks(res?.data?.data)
-              console.log('tasks-res',res?.data?.data)
-            }).catch(e=>{
-              console.log('tasks-error', e)
-            })
-            resetFields()
-            setEditForm(prev=>({...prev, visibility: false, data: null}));
-          })
-          .catch(e=>console.log('taskAdd-error',e))
+        submitFunction={()=>{
+          getTasks(projectId)
+          setEditForm(prev=>({...prev, visibility: false, data: null}));
         }}
       />}
       <Row gutter={[0,24]} style={{marginTop: 30, marginBottom: 15}}>
@@ -138,7 +110,7 @@ const ProjectDetails = (props) => {
                       'Do you want to duplicate this entry?',
                       () => {
                         console.log('onOk');
-                        postData('duplicate/task', JSON.stringify({taskId: item.id, projectId: projectId}))
+                        postData(`tasks/${item.id}/duplicate`)
                         .then(res=>{
                           console.log('Duplicate-Res', res)
                           getTasks(projectId);

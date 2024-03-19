@@ -27,7 +27,7 @@ function getItem(label, key, icon, children) {
 const items = [
   {key: '/home', label: 'Home', icon: <HomeOutlined />},
   {key: '/clients', label: 'Clients', icon: <ProductOutlined />},
-  {key: '/answers', label: 'Answers', icon: <ContactsOutlined />},
+  {key: '/responses', label: 'Responses', icon: <ContactsOutlined />},
   {key: '/reports', label: 'Reports', icon: <PieChartOutlined />},
 ];
 // const App = () => {

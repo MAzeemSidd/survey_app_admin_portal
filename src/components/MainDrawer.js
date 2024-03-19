@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { Button, Card, Col, Drawer, Dropdown, Form, Input, Row, Select, Space } from 'antd'
+import { Button, Card, Col, Drawer, Dropdown, Form, Input, InputNumber, Row, Select, Space } from 'antd'
 import { CloseOutlined, DownOutlined, PlusOutlined } from '@ant-design/icons'
+import { postData, putData } from '../Services/NetworkService'
 
 const ProjectForm = ({data}) => {
   return(<>
@@ -107,6 +108,62 @@ const TaskForm = ({data, title}) => {
   </>)
 }
 
+const SubTaskForm = ({data, title}) => {
+  const gender = [
+    {value: 'MALE', label: 'MALE'},
+    {value: 'FEMALE', label: 'FEMALE'}
+  ];
+  console.log('TaskForm-data', data)
+  return(<>
+    <Row gutter={16}>
+      <Col span={12}>
+        <Form.Item name="name" label="Name" initialValue={data?.name ?? null} validateFirst
+          rules={[
+            {
+              required: true,
+              message: 'Name is required',
+            },
+            {
+              min: 5,
+              message: 'At least 5 characters must be used',
+            },
+          ]}
+        >
+          <Input placeholder="Enter name" />
+        </Form.Item>
+      </Col>
+      <Col span={12}>
+        <Form.Item name="description" label={title == 'Employee' ? "Designation" : "Description"} initialValue={data?.description ?? null}>
+          <Input placeholder="Write description" />
+        </Form.Item>
+      </Col>
+      <Col span={8}>
+        <Form.Item label="Gender" name='gender' initialValue={data?.gender ?? null} validateFirst
+          rules={[
+            {
+              required: true,
+              message: 'Please select a gender',
+            }
+          ]}
+        >
+          <Select
+            showSearch
+            placeholder='Select a gender'
+            optionFilterProp="children"
+            onChange={val=>console.log('onSelect', val)}
+            filterOption={(input, option) => (option?.label ?? '').includes(input.toUpperCase())}
+            options={gender}
+          />
+        </Form.Item>
+      </Col>
+      <Col span={8}>
+        <Form.Item label="Age" name='age' initialValue={data?.age ?? null}>
+          <InputNumber min={1} max={100} placeholder='Enter age' />
+        </Form.Item>
+      </Col>
+    </Row>
+  </>)
+}
 
 const QuestionForm = ({formType, data}) => {
   const [selectedType, setSelectedType] = useState(data?.type ?? null)
@@ -172,7 +229,7 @@ const QuestionForm = ({formType, data}) => {
                     {subFields.map((subField, index) => (
                       <Row gutter={3} align='middle' key={subField.key}>
                         <Col span={20}>
-                          <Form.Item name={[subField.name, 'name']} label={`Option: ${index+1}`} initialValue={data.options[index] ?? null}>
+                          <Form.Item name={[subField.name, 'name']} label={`Option: ${index+1}`} initialValue={data?.options[index] ?? null}>
                             <Input placeholder="Write Something" />
                           </Form.Item>
                         </Col>
@@ -195,7 +252,7 @@ const QuestionForm = ({formType, data}) => {
 }
 
 
-const MainDrawer = ({open, data=null, onClose, title, formType, submitFunction=()=>{}}) => {
+const MainDrawer = ({open, data=null, projectId=null, taskId=null, onClose, title, formType, submitFunction=()=>{}}) => {
   const [form] = Form.useForm();
  
   const FormBody = useMemo(()=>{
@@ -205,7 +262,7 @@ const MainDrawer = ({open, data=null, onClose, title, formType, submitFunction=(
       case 'Survey':
         return <TaskForm data={data} title={title} />
       case 'Employee':
-        return <TaskForm data={data} title={title} />
+        return <SubTaskForm data={data} title={title} />
       case 'Question':
         return <QuestionForm formType={formType} data={data} />
       default:
@@ -233,7 +290,7 @@ const MainDrawer = ({open, data=null, onClose, title, formType, submitFunction=(
         }}
         onFinish={(fields)=>{
           console.log(fields)
-          if(title == 'Question'){
+          if(title == 'Question') {
             const options = fields?.options?.map(field => field);
             let newFields = fields.type == 'BINARY' ? 
             {...fields, options: [{name: "Yes"}, {name: "No"}]} 
@@ -241,7 +298,93 @@ const MainDrawer = ({open, data=null, onClose, title, formType, submitFunction=(
             fields.type == 'MULTIPLE' ? {type: fields.type, question: fields.question, options: options}
             :
             fields
-            submitFunction(newFields, ()=>form.resetFields());
+            // submitFunction(newFields, ()=>form.resetFields());
+            if(newFields) {
+              if(formType == 'Add') {
+                postData(`projects/${projectId}/tasks/${taskId}/questions`, JSON.stringify(newFields))
+                .then(res=>{
+                  console.log('QuestionAdd-Res', res)
+                  form.resetFields()
+                  submitFunction()
+                })
+                .catch(e=>console.log('QuestionAdd-Error', e))
+              }
+              else if(formType == 'edit') {
+                putData(`projects/${projectId}/tasks/${taskId}/questions/${data?.id}`, JSON.stringify({...data, ...newFields}))
+                .then(res=>{
+                  console.log('QuestionEdit-Res', res)
+                  form.resetFields()
+                  submitFunction()
+                })
+                .catch(e=>console.log('QuestionEdit-Error', e))
+              }
+            }
+          }
+          else if(title == 'Client') {
+
+            if(formType == 'Add') {
+              postData('projects', JSON.stringify(fields))
+              .then(res=>{
+                console.log('projectAdd-res', res)
+                form.resetFields()
+                submitFunction()
+              })
+              .catch(e=>console.log('projectAdd-error',e))
+            }
+            else if (formType == 'Edit') {
+              putData(`projects/${data?.id}`, JSON.stringify({...fields, id: data?.id}))
+              .then(res=>{
+                console.log('projectAdd-res', res)
+                form.resetFields()
+                submitFunction()
+              })
+              .catch(e=>console.log('project-error',e))
+            }
+
+          }
+          else if(title == 'Survey') {
+
+            if(formType == 'Add') {
+              postData(`projects/${projectId}/tasks`, JSON.stringify(fields))
+              .then(res=>{
+                console.log('taskAdd-res', res)
+                form.resetFields()
+                submitFunction()
+              })
+              .catch(e=>console.log('taskAdd-error',e))
+            }
+            else if(formType == 'Edit') {
+              putData(`projects/${projectId}/tasks/${data?.id}`, JSON.stringify({...fields, id: data?.id}))
+              .then(res=>{
+                console.log('taskAdd-res', res)
+                form.resetFields()
+                submitFunction()
+              })
+              .catch(e=>console.log('taskAdd-error',e))
+            }
+
+          }
+          else if(title == 'Employee') {
+
+            if(formType == 'Add') {
+              postData(`projects/${projectId}/tasks/${taskId}/subTasks`, JSON.stringify(fields))
+              .then(res=>{
+                console.log('SubtaskAdd-res', res)
+                form.resetFields()
+                submitFunction()
+              })
+              .catch(e=>console.log('taskAdd-error',e))
+            }
+            else if(formType == 'Edit') {
+              putData(`subtasks/${data?.id}`, JSON.stringify({...fields, id: data?.id}))
+              .then(res=>{
+                console.log('SubtaskAdd-res', res)
+                form.resetFields()
+                submitFunction()
+              })
+              .catch(e=>console.log('taskAdd-error',e))
+            }
+
           }
           else {
             submitFunction(fields, ()=>form.resetFields());

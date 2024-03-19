@@ -91,7 +91,7 @@ const TaskCollapse = ({item, projectId, handleEditBtnClick, handleDeleteBtnClick
   )
 }
 
-const Questions = ({questions, projectId, taskId, getSubTasksandQuestions}) => {
+const Questions = ({questions, projectId, taskId, getQuestions}) => {
   console.log('--------Questions--------')
   const [Questions, setQuestions] = useState(null)
   const [addFormVisibility, setAddFormVisibility] = useState(false)
@@ -120,7 +120,7 @@ const Questions = ({questions, projectId, taskId, getSubTasksandQuestions}) => {
         deleteData(`questions/${item.id}`)
         .then(res=>{
           console.log('QuestionDelete-Res', res);
-          getSubTasksandQuestions();
+          getQuestions();
         })
         .catch(e=>console.log('SubTaskDelete-Error', e))
       },
@@ -130,40 +130,28 @@ const Questions = ({questions, projectId, taskId, getSubTasksandQuestions}) => {
     )
   }
   return (<>
-    <MainDrawer open={addFormVisibility} title='Question' formType='Add'
+    <MainDrawer open={addFormVisibility}
+      projectId={projectId} taskId={taskId}
+      title='Question' formType='Add'
       onClose={(resetFields)=>{
         resetFields();
         setAddFormVisibility(false)
       }}
-      submitFunction={(fields, resetFields)=>{
-        console.log('fields', fields) 
-        postData(`projects/${projectId}/tasks/${taskId}/questions`, JSON.stringify(fields))
-        .then(res=>{
-          console.log('QuestionAdd-Res', res)
-          resetFields()
-          setAddFormVisibility(false)
-          getSubTasksandQuestions(projectId, taskId)
-        })
-        .catch(e=>console.log('QuestionAdd-Error', e))
+      submitFunction={()=>{
+        setAddFormVisibility(false)
+        getQuestions(projectId, taskId)
       }}
     />
-    {editForm.data && <MainDrawer open={editForm.visibility} data={editForm.data} title='Question' formType='Edit'
+    {editForm.data && <MainDrawer open={editForm.visibility} data={editForm.data}
+      projectId={projectId} taskId={taskId}
+      title='Question' formType='Edit'
       onClose={(resetFields)=>{
         resetFields();
         setEditForm(prev=>({...prev, visibility: false, data: null}))
       }}
-      submitFunction={(fields, resetFields)=>{
-        // let newFields = fields
-        // fields.type == 'BINARY' ? newFields = {...fields, options: [{name: "Yes"}, {name: "No"}]} : newFields = fields
-        // console.log('newFields', newFields)
-        putData(`projects/${projectId}/tasks/${taskId}/questions/${editForm?.data?.id}`, JSON.stringify({...editForm?.data, ...fields}))
-        .then(res=>{
-          console.log('QuestionAdd-Res', res)
-          resetFields()
-          setEditForm(prev=>({...prev, visibility: false, data: null}))
-          getSubTasksandQuestions();
-        })
-        .catch(e=>console.log('QuestionAdd-Error', e))
+      submitFunction={()=>{
+        getQuestions();
+        setEditForm(prev=>({...prev, visibility: false, data: null}))
       }}
     />}
     <Card size='small' type='inner' style={{minHeight: '63vh'}}>
