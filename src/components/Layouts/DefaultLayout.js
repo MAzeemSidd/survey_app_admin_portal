@@ -4,6 +4,7 @@ import {
   DesktopOutlined,
   FileOutlined,
   HomeOutlined,
+  LogoutOutlined,
   PieChartOutlined,
   ProductOutlined,
   TeamOutlined,
@@ -111,20 +112,20 @@ const App = () => {
   const handleLogout = () => {
     console.log('log out...');
     localStorage.removeItem("jwtToken");
-    window.open('/', '_blank');
-
-    window.close();
+    navigate('/', { replace: true })
+    // window.open('/');
+    // window.close();
   };
   
-  const menu = (
-    <Menu>
-      {/* <Menu.Item key="profile">Profile</Menu.Item>
-      <Menu.Item key="settings">Settings</Menu.Item> */}
-      <Menu.Item key="logout" onClick={handleLogout}>
-        Logout
-      </Menu.Item>
-    </Menu>
-  );
+  // const menu = (
+  //   <Menu>
+  //     {/* <Menu.Item key="profile">Profile</Menu.Item>
+  //     <Menu.Item key="settings">Settings</Menu.Item> */}
+  //     <Menu.Item key="logout" onClick={handleLogout}>
+  //       Logout
+  //     </Menu.Item>
+  //   </Menu>
+  // );
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider trigger={null} collapsible collapsed={collapsed}>
@@ -154,7 +155,20 @@ const App = () => {
           >
             <UnorderedListOutlined style={{ fontSize: 20 }} />
           </Button>
-          <Dropdown overlay={menu} placement="bottomRight" arrow trigger={['click']}>
+          <Dropdown /*overlay={menu}*/ placement="bottomRight" arrow trigger={['click']}
+            menu={{
+              items: [
+                {
+                  id: 1,
+                  label: 
+                    (<a target="_blank" onClick={e=>{e.stopPropagation(); handleLogout();}}>
+                      <LogoutOutlined style={{size: 10, marginRight: 5}} />
+                      Logout
+                    </a>),
+                }
+              ]
+            }}
+          >
             <Button type="text" size="large">
               <Avatar
                 style={{

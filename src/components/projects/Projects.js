@@ -69,6 +69,7 @@ const Projects = () => {
                 </Col>
                 <Col span={2}>
                   <OptionsDropdown
+                    hideDuplicate={true}
                     onEdit={()=>setEditForm(prev=>({...prev, visibility: true, data: item}))}
                     onDelete={()=>optionsModal(
                       'Confirmation',

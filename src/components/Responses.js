@@ -24,7 +24,7 @@ const AnswerTable = ({employeeData, surveyName, data}) => {
       key: 'answers',
       width: '50%',
       render: (array) => <div>{array?.map(item=>
-        <a style={{color: '#000'}}>{item.answer}</a>
+        <a key={item?.id} style={{color: '#000'}}>{item.answer}</a>
       )}</div>,
     },
   ];
@@ -172,7 +172,6 @@ const Responses = () => {
     getProjectsApi()
   }, [])
 
-  console.log('employees', employeeList, employeeListDisabled)
   useEffect(()=>{
     if(project){
       // setEmployees([

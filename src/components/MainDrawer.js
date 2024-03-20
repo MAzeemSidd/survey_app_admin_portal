@@ -309,7 +309,7 @@ const MainDrawer = ({open, data=null, projectId=null, taskId=null, onClose, titl
                 })
                 .catch(e=>console.log('QuestionAdd-Error', e))
               }
-              else if(formType == 'edit') {
+              else if(formType == 'Edit') {
                 putData(`projects/${projectId}/tasks/${taskId}/questions/${data?.id}`, JSON.stringify({...data, ...newFields}))
                 .then(res=>{
                   console.log('QuestionEdit-Res', res)

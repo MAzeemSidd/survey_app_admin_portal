@@ -40,7 +40,7 @@ const SubTasks = ({subTasks, projectId, taskId, getSubTasks}) => {
         <Col span={24}><Button icon={<AppstoreAddOutlined />} onClick={()=>setDrawerVisibility(true)}>Add Employee</Button></Col>
       </Row>
       <Row gutter={[24,24]}>
-        {subTasks?.sort((a, b) => a.id - b.id).map(item => (
+        {subTasks?./*sort((a, b) => a.id - b.id).*/map(item => (
           <Col key={item.id} span={8}>
             <Card size='small' style={{border: '.5px solid #e0e0e0', height: 110}} hoverable onClick={()=>navigate(`/client/${projectId}/survey/${taskId}/employee/${item.id}`/*, {state: {subTasks: item.subTasks, questions: item.questions}}*/)}>
             <Row>

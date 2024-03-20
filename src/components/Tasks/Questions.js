@@ -159,7 +159,7 @@ const Questions = ({questions, projectId, taskId, getQuestions}) => {
         <Col span={24}><Button icon={<DiffOutlined />} onClick={()=>setAddFormVisibility(true)}>Add Questions</Button></Col>
       </Row>
       <Row gutter={[24,24]}>
-        {Questions?.sort((a, b) => a.id - b.id).map(item => (
+        {Questions?./*sort((a, b) => a.id - b.id).*/map(item => (
           <Col key={item.id} span={24}>
             <TaskCollapse item={item} projectId={projectId} handleEditBtnClick={handleEditBtnClick} handleDeleteBtnClick={handleDeleteBtnClick} />
           </Col>
