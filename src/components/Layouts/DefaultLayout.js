@@ -1,10 +1,13 @@
 import React, { Suspense, useState } from 'react';
 import {
   ContactsOutlined,
+  FileTextOutlined,
   HomeOutlined,
+  IdcardOutlined,
   LogoutOutlined,
   PieChartOutlined,
   ProductOutlined,
+  SolutionOutlined,
   UnorderedListOutlined,
   UserOutlined,
 } from '@ant-design/icons';
@@ -25,7 +28,8 @@ function getItem(label, key, icon, children) {
 const items = [
   {key: '/home', label: 'Home', icon: <HomeOutlined />},
   {key: '/clients', label: 'Clients', icon: <ProductOutlined />},
-  {key: '/responses', label: 'Responses', icon: <ContactsOutlined />},
+  {key: '/responses', label: 'Responses', icon: <FileTextOutlined />},
+  {key: '/responses/employee', label: 'Emp Responses', icon: <SolutionOutlined />/*<IdcardOutlined /><ContactsOutlined />*/},
   {key: '/reports', label: 'Reports', icon: <PieChartOutlined />},
 ];
 

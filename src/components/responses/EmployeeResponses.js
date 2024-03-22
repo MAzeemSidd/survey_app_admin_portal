@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { AppstoreAddOutlined, CaretRightOutlined, DeleteOutlined, DownloadOutlined, EditOutlined } from '@ant-design/icons'
 import { Button, Card, Col, Collapse, Form, Row, Select, Tag, Typography , Space, Table} from 'antd'
-import { getData } from '../Services/NetworkService'
+import { getData } from '../../Services/NetworkService'
 import { useLocation } from 'react-router-dom'
 import generatePDF, { Margin, Resolution } from 'react-to-pdf'
 import pdfMake from "pdfmake/build/pdfmake";
@@ -130,7 +130,7 @@ const AnswerTable = ({employeeData, surveyName, data}) => {
   </>)
 }
 
-const Responses = () => {
+const EmployeeResponses = () => {
   const [project, setProject] = useState(null)
   const [projectList, setProjectList] = useState(null)
   const [employeeData, setEmployeeData] = useState(null)
@@ -190,7 +190,7 @@ const Responses = () => {
 
   return (<>
     <Row style={{marginTop: 30, marginBottom: 15}}>
-      <Col span={6}><Typography.Title level={3} style={{color: '#3C4B64',margin: 0}}>Responses</Typography.Title></Col>
+      <Col span={6}><Typography.Title level={3} style={{color: '#3C4B64',margin: 0}}>Employee Responses</Typography.Title></Col>
     </Row>
 
     <Row gutter={24}>
@@ -199,7 +199,7 @@ const Responses = () => {
           <Select
             showSearch
             disabled={!projectList ? true : false}
-            placeholder="Select an Project"
+            placeholder="Select a Project"
             optionFilterProp="children"
             onChange={(_, item)=>setProject(item)}
             filterOption={(input, option) => (option?.label.toUpperCase() ?? '').includes(input.toUpperCase())}
@@ -260,50 +260,30 @@ const Responses = () => {
 
                   <Col span={24}>
                     <Row gutter={[0,24]}>
-                      {employeeData?.tasks?.map(item=>(
-                        <Col span={24}>
-                          <Card size='small' hoverable style={{border: '1px solid #e0e0e0'}}>
-                            <Collapse
-                              bordered={false}
-                              defaultActiveKey={['1']}
-                              expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
-                              // style={{
-                              //   background: token.colorBgContainer,
-                              // }}
-                              items={[
-                                {
-                                  key: '1',
-                                  label: <Typography.Title style={{margin: 0, padding: 0, fontSize: 16}}>{item.name}</Typography.Title>,
-                                  children: <AnswerTable employeeData={employeeData} surveyName={item?.name} data={item?.questions} />,
-                                  style: {background: '#fff'},
-                                }
-                              ]}
-                            />
-                          </Card>
-                        </Col>
-                      ))
+                      {
+                        employeeData?.tasks?.map(item=>(
+                          <Col span={24}>
+                            <Card size='small' hoverable style={{border: '1px solid #e0e0e0'}}>
+                              <Collapse
+                                bordered={false}
+                                defaultActiveKey={['1']}
+                                expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
+                                // style={{
+                                //   background: token.colorBgContainer,
+                                // }}
+                                items={[
+                                  {
+                                    key: '1',
+                                    label: <Typography.Title style={{margin: 0, padding: 0, fontSize: 16}}>{item.name}</Typography.Title>,
+                                    children: <AnswerTable employeeData={employeeData} surveyName={item?.name} data={item?.questions} />,
+                                    style: {background: '#fff'},
+                                  }
+                                ]}
+                              />
+                            </Card>
+                          </Col>
+                        ))
                       }
-
-                      {/* <Col span={24}>
-                        <Card size='small' hoverable style={{border: '1px solid #e0e0e0'}}>
-                          <Collapse
-                            bordered={false}
-                            // defaultActiveKey={['1']}
-                            expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
-                            // style={{
-                            //   background: token.colorBgContainer,
-                            // }}
-                            items={[
-                              {
-                                key: '1',
-                                label: <Typography.Title level={5} style={{margin: 0, padding: 0, fontSize: 16}}>Survey Name 2</Typography.Title>,
-                                children: <AnswerTable/>,
-                                style: {background: '#fff'},
-                              }
-                            ]}
-                          />
-                        </Card>
-                      </Col> */}
                     </Row>
                   </Col>
                 </Row>
@@ -316,4 +296,4 @@ const Responses = () => {
   </>)
 }
 
-export default Responses
+export default EmployeeResponses
