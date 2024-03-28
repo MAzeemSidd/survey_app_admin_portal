@@ -1,71 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { Button, Card, Col, Drawer, Form, Input, Row, Select, Table, Tag, Typography } from 'antd'
+import { Button, Card, Col, Drawer, Form, Input, Progress, Row, Select, Table, Tag, Typography } from 'antd'
 import { getData } from '../../Services/NetworkService';
 import { Pie } from '@ant-design/plots';
-
-const StatsDrawer = ({open, onClose}) => {
-  const config = {
-    data: [
-      { type: 'Used for building web applications', value: 13 },
-      { type: 'Building Operating System', value: 17 },
-      { type: 'Used for building native mobile applications', value: 10 },
-      { type: 'Used for hacking systems', value: 20 },
-      { type: 'Used for building native', value: 12 },
-      { type: 'Used for', value: 28 }
-    ],
-    angleField: 'value',
-    colorField: 'type',
-    // paddingRight: 140,
-    // paddingLeft: 150,
-    paddingTop: 50,
-    innerRadius: 0.4, //set inner radius of chart
-    radius: 0.7, //set radius(size) of chart
-    label: {
-      text: 'value', //label text
-      // position: 'spider', //use to show labels with pointed lines
-      style: {
-        fontWeight: 'bold',
-      },
-    },
-    legend: /*false,*/ //legends are the color indicator of labels, if false then will not be shown
-    {
-      color: {
-        title: false,
-        position: 'right',
-        rowPadding: 1,
-      },
-    },
-    annotations: [
-      {
-        type: 'text',
-        style: {
-          text: 'Answer\nStats',
-          x: '50%',
-          y: '50%',
-          textAlign: 'center',
-          fontSize: 25,
-          // fontStyle: 'bold',
-        },
-      },
-    ],
-  };
-
-  return(
-    <Drawer
-      title='Stats'
-      width={720}
-      onClose={onClose}
-      open={open}
-      // styles={{
-      //   body: {
-      //     paddingBottom: 80,
-      //   },
-      // }}
-    >
-      <Pie {...config} />
-    </Drawer>
-  )
-}
+import StatsDrawer from './StatsDrawer';
 
 const Responses = () => {
   const [form] = Form.useForm();
@@ -73,56 +10,69 @@ const Responses = () => {
   const [projectList, setProjectList] = useState(null)
   const [project, setProject] = useState(null)
   const [employeeList, setEmployeeList] = useState(null)
-  const [tableData, setTableData] = useState([
-    {
-      key: '1',
-      question: 'What is flutter?',
-      employeeName: 'M Hasnain',
-      type: 'MULTIPLE',
-      options: [{id: 1, option: 'Used for building web applications'}, {id: 2, option: 'Building Operating System'}, {id: 3, option: 'Used for building native mobile applications'}],
-      answers: [{id: 3, answer: 'Used for building native mobile applications'}],
-    },
-    {
-      key: '2',
-      question: 'Why you choose to become a backend developer?',
-      employeeName: 'Nayyar Abbas',
-      type: 'MULTIPLE',
-      options: [],
-      answers: [{id: 6, answer: 'I love to working with databases, APIs, and server-side technologies to handle data storage, processing, and retrieval'}],
-    },
-    {
-      key: '3',
-      question: 'What is flutter?',
-      employeeName: 'M Umer Hayat',
-      type: 'MULTIPLE',
-      options: [{id: 1, option: 'Used for building web applications'}, {id: 2, option: 'Building Operating System'}, {id: 3, option: 'Used for building native mobile applications'}],
-      answers: [{id: 3, answer: 'Used for building native mobile applications'}],
-    },
-    {
-      key: '4',
-      question: 'Why Javascript is used?',
-      employeeName: 'Waqar Wicky',
-      type: 'MULTIPLE',
-      options: [{id: 1, option: 'Used for building web applications'}, {id: 2, option: 'Building Operating System'}, {id: 3, option: 'Used for building native mobile applications'}],
-      answers: [{id: 1, answer: 'Used for building web applications'}, {id: 3, answer: 'Used for building native mobile applications'}],
-    },
-    {
-      key: '5',
-      question: 'What is flutter?',
-      employeeName: 'M Azeem',
-      type: 'MULTIPLE',
-      options: [{id: 1, option: 'Used for building web applications'}, {id: 2, option: 'Building Operating System'}, {id: 3, option: 'Used for building native mobile applications'}],
-      answers: [{id: 1, answer: 'Used for building web applications'}, {id: 3, answer: 'Used for building native mobile applications'}],
-    },
-    {
-      key: '6',
-      question: 'Are you a Java developer?',
-      employeeName: 'Abdur Rahman Sami',
-      type: 'BINARY',
-      options: [{id: 4, option: 'Yes'}, {id: 5, option: 'No'}],
-      answers: [{id: 5, answer: 'No'}],
-    },
-  ])
+  const [empResponses, setEmpResponses] = useState(null)
+  // const [tableData, setTableData] = useState([
+  //   {
+  //     key: '1',
+  //     clientName: 'HBL',
+  //     surveyName: 'Organizational Performance Survey',
+  //     question: 'What is flutter?',
+  //     employeeName: 'M Hasnain',
+  //     type: 'MULTIPLE',
+  //     options: [{id: 1, option: 'Used for building web applications'}, {id: 2, option: 'Building Operating System'}, {id: 3, option: 'Used for building native mobile applications'}],
+  //     answers: [{id: 3, answer: 'Used for building native mobile applications'}],
+  //   },
+  //   {
+  //     key: '2',
+  //     clientName: 'HBL',
+  //     surveyName: 'Teamwork and Collaboration Survey',
+  //     question: 'Why you choose to become a backend developer?',
+  //     employeeName: 'Nayyar Abbas',
+  //     type: 'TEXT',
+  //     options: [],
+  //     answers: [{id: 6, answer: 'I love to working with databases, APIs, and server-side technologies to handle data storage, processing, and retrieval'}],
+  //   },
+  //   {
+  //     key: '3',
+  //     clientName: '10 Pearls',
+  //     surveyName: 'Teamwork and Collaboration Survey',
+  //     question: 'What is flutter?',
+  //     employeeName: 'M Umer Hayat',
+  //     type: 'MULTIPLE',
+  //     options: [{id: 1, option: 'Used for building web applications'}, {id: 2, option: 'Building Operating System'}, {id: 3, option: 'Used for building native mobile applications'}],
+  //     answers: [{id: 3, answer: 'Used for building native mobile applications'}],
+  //   },
+  //   {
+  //     key: '4',
+  //     clientName: 'Virtuosoft',
+  //     surveyName: 'Employee Career Development Survey',
+  //     question: 'Why Javascript is used?',
+  //     employeeName: 'Waqar Wicky',
+  //     type: 'MULTIPLE',
+  //     options: [{id: 1, option: 'Used for building web applications'}, {id: 2, option: 'Building Operating System'}, {id: 3, option: 'Used for building native mobile applications'}],
+  //     answers: [{id: 1, answer: 'Used for building web applications'}, {id: 3, answer: 'Used for building native mobile applications'}],
+  //   },
+  //   {
+  //     key: '5',
+  //     clientName: 'Virtuosoft',
+  //     surveyName: 'Performance Evaluation Survey',
+  //     question: 'What is flutter?',
+  //     employeeName: 'M Azeem',
+  //     type: 'MULTIPLE',
+  //     options: [{id: 1, option: 'Used for building web applications'}, {id: 2, option: 'Building Operating System'}, {id: 3, option: 'Used for building native mobile applications'}],
+  //     answers: [{id: 1, answer: 'Used for building web applications'}, {id: 3, answer: 'Used for building native mobile applications'}],
+  //   },
+  //   {
+  //     key: '6',
+  //     clientName: 'Virtuosoft',
+  //     surveyName: 'Performance Evaluation Survey',
+  //     question: 'Are you a Java developer?',
+  //     employeeName: 'Abdur Rahman Sami',
+  //     type: 'BINARY',
+  //     options: [{id: 4, option: 'Yes'}, {id: 5, option: 'No'}],
+  //     answers: [{id: 5, answer: 'No'}],
+  //   },
+  // ])
 
   // const tagColor = {
   //   text: 'processing',
@@ -134,62 +84,94 @@ const Responses = () => {
   const columns = [
     {
       title: 'Employee',
-      dataIndex: 'employeeName',
-      key: 'employeeName',
-      // width: '12%',
+      dataIndex: 'employee',
+      key: 'employee',
       width: 'auto',
-      render: text => <div style={{lineHeight: 1}}><text style={{fontSize: 11, color: '#505050'}}>{text}</text></div>,
-      // ...getColumnSearchProps('name'),
+      render: text => <div style={{lineHeight: 1}}><text style={{fontSize: 12, color: '#505050'}}>
+          {text}</text>
+        </div>,
+    },
+    {
+      title: 'Client',
+      dataIndex: 'client',
+      key: 'client',
+      width: 'auto',
+      render: text => <div style={{lineHeight: 1}}><text style={{fontSize: 12, color: '#505050'}}>
+          {text}</text>
+        </div>,
+    },
+    {
+      title: 'Survey',
+      dataIndex: 'survey',
+      key: 'survey',
+      width: 'auto',
+      render: text => <div style={{lineHeight: 1}}><text style={{fontSize: 12, color: '#505050'}}>
+          {text}</text>
+        </div>,
     },
     {
       title: 'Question',
-      dataIndex: 'question',
-      key: 'question',
-      // width: '23%',
-      width: 'auto',
-      render: text => <div style={{lineHeight: 1}}><text style={{fontSize: 11, color: '#505050'}}>{text}</text></div>,
-      // ...getColumnSearchProps('age'),
+      dataIndex: 'questionName',
+      key: 'questionName',
+      width: '25%',
+      render: text => <div style={{lineHeight: 1}}><text style={{fontSize: 12, color: '#505050'}}>
+          {text}</text>
+        </div>,
     },
     {
       title: 'Type',
       dataIndex: 'type',
       key: 'type',
-      // width: '10%',
-      width: 'auto',
-      render: text => <Tag style={{fontSize: 9, color: '#505050', background: '#fff'}}>{text}</Tag>
+      width: '6%',
+      render: text => <div style={{fontSize: 9, color: '#505050', background: '#fff', lineHeight: 1.2,
+        border: '.5px solid #606060', borderRadius: 3, padding: '.5px 3px 1px', display: 'inline-block'}}>
+          {text?.toUpperCase()}
+        </div>
     },
     {
       title: 'Options',
       dataIndex: 'options',
       key: 'options',
-      width: '22%',
-      render: (array,obj) => <div>{
-        obj?.type === 'BINARY' ?
-        <text style={{fontSize: 11, color: '#505050', fontStyle: 'italic'}}>{'( Yes / No )'}</text>
+      width: '20%',
+      render: (array,obj) => <td>{
+        array ?
+          obj?.type.toUpperCase() === 'BINARY' ?
+          <text style={{fontSize: 12, color: '#505050', fontStyle: 'italic'}}>{'( Yes / No )'}</text>
+          :
+          array?.map(item=>
+          <div key={item?.id} style={{marginBottom: 7, padding: '0 5px 3px', background: '#f0f0f0', borderRadius: 3, lineHeight: .1}}>
+            <Typography.Text style={{fontSize: 12, color: '#505050', fontStyle: 'italic'}}>{item?.name}</Typography.Text>
+          </div>)
         :
-        array?.map(item=>
-        <div key={item?.id} style={{marginBottom: 7, padding: '0 5px 5px', background: '#f0f0f0', borderRadius: 3, lineHeight: 1}}>
-          <text style={{fontSize: 11, color: '#505050', fontStyle: 'italic'}}>{item?.option}</text>
-        </div>
-      )}</div>
+        <text style={{fontSize: 12, color: '#505050'}}>--</text>
+      }</td>
     },
     {
       title: 'Answers',
-      dataIndex: 'answers',
-      key: 'answers',
-      width: '27%',
-      render: array => <div>{array?.map(item=>
-        <div key={item?.id} onClick={()=>setStatsDrawerVisibility(true)}
-          style={{margin: 5, padding: '5px 10px 10px', background: '#c5d8e8', borderRadius: 3, lineHeight: 1, cursor: 'pointer'}}>
-          <text style={{fontSize: 11, color: '#505050'}}>{item?.answer}</text>
-        </div>
-      )}</div>
-      // ...getColumnSearchProps('address'),
-      // sorter: (a, b) => a.address.length - b.address.length,
-      // sortDirections: ['descend', 'ascend'],
+      dataIndex: 'answer',
+      key: 'answer',
+      width: '20%',
+      render: text => <div style={{lineHeight: 1, cursor: text ? 'pointer' : ''}}
+        onClick={()=>{text && setStatsDrawerVisibility(true);}}>
+          <Typography.Paragraph style={{fontSize: 12, color: '#505050', lineHeight: 1}}>
+            {text ?? 'N/A'}
+          </Typography.Paragraph>
+        </div>,
+      // render: array => <div>{array?.map(item=>
+      //   <div key={item?.id} onClick={()=>setStatsDrawerVisibility(true)}
+      //     style={{margin: 5, padding: '5px 10px 10px', background: '#c5d8e8', borderRadius: 3, lineHeight: 1, cursor: 'pointer'}}>
+      //     <text style={{fontSize: 11, color: '#505050'}}>{item?.answer}</text>
+      //   </div>
+      // )}</div>
     },
   ];
   
+  const getEmpResponsesReq = () => {
+    getData('response')
+    .then(res=>{console.log('Responses-Res', res?.data?.data?.content); setEmpResponses(res?.data?.data?.content)})
+    .catch(e=>console.log('Responses-Err', e))
+  }
+
   const getProjectsApi = () => {
     getData('projects')
      .then((res) => {
@@ -214,6 +196,7 @@ const Responses = () => {
 
   useEffect(()=>{
     getProjectsApi();
+    getEmpResponsesReq();
   }, [])
   
   useEffect(()=>{
@@ -275,7 +258,7 @@ const Responses = () => {
                   <Input size='middle' placeholder='Enter Answer' />
                 </Form.Item>
               </Col>
-              <Col span={2}><Button size='middle' type='primary' htmlType='submit'>Search</Button></Col>
+              <Col span={2}><Button type='primary' size='middle' htmlType='submit'>Search</Button></Col>
             </Row>
           </Card>
         </Col>
@@ -295,7 +278,7 @@ const Responses = () => {
           <Card>
             <Row>
               <Col span={24}>
-                <Table columns={columns} dataSource={tableData} />
+                <Table size='middle' columns={columns} dataSource={/*tableData*/empResponses ?? []} />
               </Col>
             </Row>
           </Card>

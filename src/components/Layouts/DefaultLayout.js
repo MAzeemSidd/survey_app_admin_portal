@@ -51,21 +51,21 @@ const DefaultLayout = () => {
   return (<>
     {
       localStorage.getItem("jwtToken") ?
-      <ConfigProvider
-        theme={{
-          components: {
-            Layout: {
-              /* here is your component tokens */
-              siderBg: '#36454f'
-            },
-            Menu: {
-              darkItemBg: '#36454f',
-              darkItemSelectedBg: '#26343d',
-              darkItemHoverBg: '#375263'
-            }
-          },
-        }}
-      >
+      // <ConfigProvider
+      //   theme={{
+      //     components: {
+      //       Layout: {
+      //         /* here is your component tokens */
+      //         siderBg: '#36454f'
+      //       },
+      //       Menu: {
+      //         darkItemBg: '#36454f',
+      //         darkItemSelectedBg: '#26343d',
+      //         darkItemHoverBg: '#375263'
+      //       }
+      //     },
+      //   }}
+      // >
         <Layout hasSider>
           <Sider trigger={null} collapsible collapsed={collapsed}
             style={{overflow: 'auto',height: '100vh',position: 'fixed',left: 0,top: 0,bottom: 0}}>
@@ -149,7 +149,7 @@ const DefaultLayout = () => {
             </Footer>
           </Layout>
         </Layout>
-      </ConfigProvider>
+      // </ConfigProvider>
       :
       <Navigate to='/' />
     }

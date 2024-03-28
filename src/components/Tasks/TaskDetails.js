@@ -179,7 +179,7 @@ const TaskDetails = () => {
               } */}
           {
             subTaskId ?
-            <Questions questions={questions} projectId={projectId} taskId={taskId} getQuestions={()=>getQuestions(projectId, taskId)} />
+            <Questions questions={questions} projectId={projectId} taskId={taskId} subTaskId={subTaskId} getQuestions={()=>getQuestions(projectId, taskId)} />
             :
             <SubTasks subTasks={subTasks} setOpen={()=>setSubTaskForm(true)} projectId={projectId} taskId={taskId} getSubTasks={()=>getSubTasks(taskId)} />
             // (

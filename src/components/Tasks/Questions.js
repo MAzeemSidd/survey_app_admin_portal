@@ -6,7 +6,7 @@ import { deleteData, getData, postData, putData } from '../../Services/NetworkSe
 import { optionsModal } from '../../functions/optionsModal'
 import { type } from '@testing-library/user-event/dist/type'
 
-const TaskCollapse = ({item, projectId, handleEditBtnClick, handleDeleteBtnClick, /*handleDuplicateBtnClick*/}) => {
+const TaskCollapse = ({item, projectId, taskId, subTaskId, handleEditBtnClick, handleDeleteBtnClick, /*handleDuplicateBtnClick*/}) => {
   const [isOpen, setIsOpen] = useState(false)
   const [answer, setAnswer] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -17,14 +17,15 @@ const TaskCollapse = ({item, projectId, handleEditBtnClick, handleDeleteBtnClick
     if(isOpen) {
       console.log('UseEffect--TaskCollapse',item)
       setLoading(true);
-      getData(`projects/${projectId}/questions/${item.id}/answers`)
+      getData(`projects/${projectId}/tasks/${taskId}/subTasks/${subTaskId}/questions/${item.id}/answers`)
+      // getData(`projects/${projectId}/questions/${item.id}/answers`)
       .then(res=>{
-        console.log('Answer-Res',res?.data?.data);
+        console.log('Answer-Res',res?.data?.data?.content);
         if(item?.type == 'MULTIPLE') {
-          let options = res?.data?.data.length != 0 ? res?.data?.data?.map(item=>item.answer) : null
+          let options = res?.data?.data?.content?.length != 0 ? res?.data?.data?.content?.map(item=>item.answer) : null
           setAnswer(options)
         }
-        else setAnswer(res?.data?.data[0]?.answer);
+        else setAnswer(res?.data?.data?.content[0]?.answer);
         setLoading(false)
       })
       .catch(e=>{console.log(e); setLoading(false)})
@@ -91,7 +92,7 @@ const TaskCollapse = ({item, projectId, handleEditBtnClick, handleDeleteBtnClick
   )
 }
 
-const Questions = ({questions, projectId, taskId, getQuestions}) => {
+const Questions = ({questions, projectId, taskId, subTaskId, getQuestions}) => {
   console.log('--------Questions--------')
   const [Questions, setQuestions] = useState(null)
   const [addFormVisibility, setAddFormVisibility] = useState(false)
@@ -161,7 +162,7 @@ const Questions = ({questions, projectId, taskId, getQuestions}) => {
       <Row gutter={[24,24]}>
         {Questions?./*sort((a, b) => a.id - b.id).*/map(item => (
           <Col key={item.id} span={24}>
-            <TaskCollapse item={item} projectId={projectId} handleEditBtnClick={handleEditBtnClick} handleDeleteBtnClick={handleDeleteBtnClick} />
+            <TaskCollapse item={item} projectId={projectId} taskId={taskId} subTaskId={subTaskId} handleEditBtnClick={handleEditBtnClick} handleDeleteBtnClick={handleDeleteBtnClick} />
           </Col>
         ))}
       </Row>
